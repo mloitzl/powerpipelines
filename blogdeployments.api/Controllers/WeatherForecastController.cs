@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using blogdeployments.api.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Web;
 
 namespace blogdeployments.api.Controllers
 {
     [ApiController]
+    [AuthorizeForScopes(Scopes = new[] {"api://com.loitzl.test/Config.Manage"})]
+    [Authorize(Policy = AuthorizationPolicies.ConfigManageRequired)]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
