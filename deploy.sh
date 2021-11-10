@@ -1,6 +1,18 @@
 #!/bin/bash
+
+while getopts u:h:f:t: flag
+do
+    case "${flag}" in
+        u) username=${OPTARG};;
+        h) host=${OPTARG};;
+        f) source=${OPTARG};;
+        t) target=${OPTARG};;
+    esac
+done
+
+targetarch=linux-arm
+
 rm -rf ./publish/
-dotnet publish ./blogdeployments.api/blogdeployments.api.csproj -r linux-arm -c Release -o publish/api
-/opt/homebrew/bin/rsync -avh ./publish/api/ pi@192.168.1.123:~/blogdeployment/api
-ssh pi@192.168.1.123 sudo systemctl restart blogdeployment.api.service
-# scp -r ./publish/api/* pi@192.168.1.123:~/blogdeployment/api
+dotnet publish $source -r $targetarch  -c Release -o publish/$source
+/opt/homebrew/bin/rsync -avh ./publish/$source $username@$host:$target
+ssh $username@$host sudo systemctl restart blogdeployment.api.service
