@@ -43,7 +43,10 @@ namespace blogdeployments.api
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(AuthorizationPolicies.ConfigManageRequired, policy => policy.RequireRole(AppRole.AppRoleConfigManage));
+                options.AddPolicy(
+                    AuthorizationPolicies.ConfigManageRequired,
+                    policy => policy.RequireRole(AppRole.AppRoleConfigManage)
+                    );
             });
 
             services.AddControllers();
