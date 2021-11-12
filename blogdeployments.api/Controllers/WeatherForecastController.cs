@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Web;
+
 
 namespace blogdeployments.api.Controllers
 {
@@ -29,7 +29,6 @@ namespace blogdeployments.api.Controllers
         {
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
-
         }
 
         [HttpGet]
@@ -47,4 +46,3 @@ namespace blogdeployments.api.Controllers
         }
     }
 }
-

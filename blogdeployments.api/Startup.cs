@@ -14,6 +14,7 @@ namespace blogdeployments.api
 {
     public class Startup
     {
+        private readonly string sharePointUri = "sharePointUri";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -24,6 +25,19 @@ namespace blogdeployments.api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services
+                .AddCors(options =>
+                    {
+                        options.AddPolicy(name: sharePointUri,
+                                    builder =>
+                                    {
+                                        builder.WithOrigins("https://*.sharepoint.com")
+                                            .SetIsOriginAllowedToAllowWildcardSubdomains()
+                                            .AllowCredentials()
+                                            .AllowAnyHeader()
+                                            .AllowAnyMethod();
+                                    });
+                    });
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
@@ -69,6 +83,8 @@ namespace blogdeployments.api
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseCors(sharePointUri);
 
             app.UseEndpoints(endpoints =>
             {
