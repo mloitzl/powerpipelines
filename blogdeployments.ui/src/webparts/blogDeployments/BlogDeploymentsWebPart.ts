@@ -21,7 +21,8 @@ export default class BlogDeploymentsWebPart extends BaseClientSideWebPart<IBlogD
     const element: React.ReactElement<IBlogDeploymentsProps> = React.createElement(
       BlogDeployments,
       {
-        description: this.properties.description
+        description: this.properties.description,
+        aadHttpClientFactory: this.context.aadHttpClientFactory
       }
     );
 
