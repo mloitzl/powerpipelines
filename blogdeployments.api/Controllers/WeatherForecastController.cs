@@ -1,3 +1,5 @@
+using blogdeployments.repository;
+using CouchDB.Driver.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,22 +19,50 @@ public class WeatherForecastController : ControllerBase
 
     private readonly ILogger<WeatherForecastController> _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly DeploymentsContext _deploymentsContext;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpContextAccessor httpContext)
+    public WeatherForecastController(
+        ILogger<WeatherForecastController> logger, 
+        IHttpContextAccessor httpContext, 
+        DeploymentsContext deploymentsContext)
     {
         _logger = logger;
         _httpContextAccessor = httpContext;
+        _deploymentsContext = deploymentsContext;
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    public async Task<IEnumerable<WeatherForecast>> Get()
     {
+        var deployments = await _deploymentsContext.Deployments.ToListAsync();
+
+        var deployment = new Deployment
+        {
+            MyProperty = DateTime.Now.ToString("o")
+        };
+        await _deploymentsContext.Deployments.AddAsync(deployment);
+        /* .Where(r => 
+            r.Surname == "Skywalker" && 
+            (
+                r.Battles.All(b => b.Planet == "Naboo") ||
+                r.Battles.Any(b => b.Planet == "Death Star")
+            )
+        ) 
+         .OrderByDescending(r => r.Name)
+        .ThenByDescending(r => r.Age)
+         .Take(2)
+        .Select(
+            r => r.Name,
+            r => r.Age
+        })
+         .ToListAsync();
+    */
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
             Date = DateTime.Now.AddDays(index),
             TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]            ,
-                RequestUri = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.Path}"
+            Summary = Summaries[Random.Shared.Next(Summaries.Length)],
+            RequestUri = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.Path}"
         })
         .ToArray();
     }

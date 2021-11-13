@@ -13,6 +13,6 @@ done
 targetarch=linux-arm
 
 rm -rf ./publish/
-dotnet publish $source -r $targetarch  -c Release -o publish/$source
+dotnet publish $source -r $targetarch  -c Release -o publish/$source --self-contained
 /opt/homebrew/bin/rsync -avh ./publish/$source $username@$host:$target
 ssh $username@$host sudo systemctl restart blogdeployment.api.service

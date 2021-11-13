@@ -1,4 +1,6 @@
 using blogdeployments.api;
+using blogdeployments.repository;
+using CouchDB.Driver.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -49,6 +51,12 @@ builder.Services.AddAuthorization(options =>
         );
 });
 
+builder.Services.AddCouchContext<DeploymentsContext>(optionBuilder => optionBuilder
+    .UseEndpoint("http://localhost:5984/")
+    .EnsureDatabaseExists()
+    .UseBasicAuthentication(
+        username: builder.Configuration["couchdb_user"],
+        password: builder.Configuration["couchdb_password"]));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -65,6 +73,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors(sharePointUri);
 
 app.MapControllers();
 

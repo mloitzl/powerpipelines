@@ -32,7 +32,7 @@ export default class BlogDeployments extends React.Component<IBlogDeploymentsPro
       .getClient('api://com.loitzl.test/blogdeployments')
       .then((client: AadHttpClient): void => {
         client
-          .get('https://localhost:5001/WeatherForecast', AadHttpClient.configurations.v1)
+          .get('https://localhost:7099/WeatherForecast', AadHttpClient.configurations.v1)
           .then(response => response.json())
           .then(o => {
             this.setState(
