@@ -1,48 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
+namespace blogdeployments.api.Controllers;
 
-namespace blogdeployments.api.Controllers
+[ApiController]
+[Route("[controller]")]
+// [AuthorizeForScopes(Scopes = new[] {"api://com.loitzl.test/Config.Manage"})]
+// [Authorize(Policy = AuthorizationPolicies.ConfigManageRequired)]
+[Authorize]
+public class WeatherForecastController : ControllerBase
 {
-    [ApiController]
-    // [AuthorizeForScopes(Scopes = new[] {"api://com.loitzl.test/Config.Manage"})]
-    // [Authorize(Policy = AuthorizationPolicies.ConfigManageRequired)]
-    [Authorize]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    private static readonly string[] Summaries = new[]
     {
-        private static readonly string[] Summaries = new[]
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+
+    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpContextAccessor httpContext)
+    {
+        _logger = logger;
+        _httpContextAccessor = httpContext;
+    }
+
+    [HttpGet(Name = "GetWeatherForecast")]
+    public IEnumerable<WeatherForecast> Get()
+    {
+        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-
-        private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpContextAccessor httpContextAccessor)
-        {
-            _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
-        {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)],
+            Date = DateTime.Now.AddDays(index),
+            TemperatureC = Random.Shared.Next(-20, 55),
+            Summary = Summaries[Random.Shared.Next(Summaries.Length)]            ,
                 RequestUri = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.Path}"
-            })
-            .ToArray();
-        }
+        })
+        .ToArray();
     }
 }
