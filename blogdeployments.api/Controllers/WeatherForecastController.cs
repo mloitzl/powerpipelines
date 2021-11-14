@@ -1,7 +1,9 @@
+using System.Text;
 using blogdeployments.repository;
 using CouchDB.Driver.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMQ.Client;
 
 namespace blogdeployments.api.Controllers;
 
@@ -22,8 +24,8 @@ public class WeatherForecastController : ControllerBase
     private readonly DeploymentsContext _deploymentsContext;
 
     public WeatherForecastController(
-        ILogger<WeatherForecastController> logger, 
-        IHttpContextAccessor httpContext, 
+        ILogger<WeatherForecastController> logger,
+        IHttpContextAccessor httpContext,
         DeploymentsContext deploymentsContext)
     {
         _logger = logger;
@@ -40,6 +42,20 @@ public class WeatherForecastController : ControllerBase
         {
             MyProperty = DateTime.Now.ToString("o")
         };
+
+        var factory = new ConnectionFactory() { HostName = "localhost" };
+        using (var connection = factory.CreateConnection())
+        using (var channel = connection.CreateModel())
+        {
+            channel.QueueDeclare(queue: "hello", durable: false, exclusive: false, autoDelete: false, arguments: null);
+
+            string message = "Hello World!";
+            var body = Encoding.UTF8.GetBytes(message);
+
+            channel.BasicPublish(exchange: "", routingKey: "hello", basicProperties: null, body: body);
+            Console.WriteLine(" [x] Sent {0}", message);
+        }
+
         await _deploymentsContext.Deployments.AddAsync(deployment);
         /* .Where(r => 
             r.Surname == "Skywalker" && 

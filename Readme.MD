@@ -51,3 +51,30 @@ WantedBy=multi-user.target
 `$ sudo systemctl enable blogdeployment.api.service`
 `$ sudo systemctl start blogdeployment.api.service`
 `$ journalctl -fu blogdeployment.api.service`
+
+
+https://github.com/jguillod/couchdb-on-raspberry-pi
+
+
+<!-- sudo apt-get --no-install-recommends -y remove build-essential \
+pkg-config erlang libicu-dev \
+libmozjs185-dev libcurl4-openssl-dev
+ -->
+
+https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.8.8
+
+```
+$ sudo dpkg -i esl-erlang_22.1.6-1~raspbian~buster_armhf.deb
+$ sudo dpkg -i rabbitmq-server_3.8.8-1_all.deb 
+$ dpkg-query -f '${Package} ${Status}\n' -W "<searchterm*>"
+
+# https://stackoverflow.com/a/52295727
+$ sudo rabbitmq-plugins enable rabbitmq_management
+$ sudo rabbitmqctl add_user user password
+$ sudo rabbitmqctl set_user_tags user administrator
+$ sudo rabbitmqctl set_permissions -p / user ".*" ".*" ".*"
+
+ssh -L 127.0.0.1:15672:localhost:15672 <user>@<host>
+ssh -L 127.0.0.1:5672:localhost:5672 <user>@<host>
+```
+
