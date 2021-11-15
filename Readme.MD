@@ -78,3 +78,7 @@ ssh -L 127.0.0.1:15672:localhost:15672 <user>@<host>
 ssh -L 127.0.0.1:5672:localhost:5672 <user>@<host>
 ```
 
+```
+$ docker run -d --rm --name couchdbm -p 5984:5984 -v ~/.secrets/couchdb/local.ini:/opt/couchdb/etc/local.ini couchdb:3.2.0
+$ docker run -d --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.8.8-management
+```
