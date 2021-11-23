@@ -62,6 +62,8 @@ builder.Services.AddCouchContext<DeploymentsContext>(optionBuilder => optionBuil
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

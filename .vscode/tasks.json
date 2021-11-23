@@ -4,7 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "build-api",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -16,7 +16,19 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "publish",
+            "label": "build-power",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/blogdeployments.power/blogdeployments.power.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish-api",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -28,7 +40,7 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "watch",
+            "label": "watch-api",
             "command": "dotnet",
             "type": "process",
             "args": [

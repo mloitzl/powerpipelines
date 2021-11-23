@@ -5,14 +5,34 @@
             // Use IntelliSense to find out which attributes exist for C# debugging
             // Use hover for the description of the existing attributes
             // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-            "name": ".NET Core Launch (web)",
+            "name": ".NET Core Launch (api)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
+            "preLaunchTask": "build-api",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/blogdeployments.api/bin/Debug/net6.0/blogdeployments.api.dll",
             "args": [],
             "cwd": "${workspaceFolder}/blogdeployments.api",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            // Use IntelliSense to find out which attributes exist for C# debugging
+            // Use hover for the description of the existing attributes
+            // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+            "name": ".NET Core Launch (power)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-power",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/blogdeployments.power/bin/Debug/net6.0/blogdeployments.power.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/blogdeployments.power",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
