@@ -1,6 +1,8 @@
+using System.Reflection;
 using blogdeployments.api;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -62,7 +64,7 @@ builder.Services.AddCouchContext<DeploymentsContext>(optionBuilder => optionBuil
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 

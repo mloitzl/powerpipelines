@@ -41,10 +41,18 @@ namespace blogdeployments.power.Services
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine(" [x] Received {0}", message);
+                // _channel.BasicAck(ea.DeliveryTag, false);
             };
             _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
 
             return Task.CompletedTask;
+        }
+
+        public override void Dispose()
+        {
+            _channel.Close();
+            _connection.Close();
+            base.Dispose();
         }
     }
 }
