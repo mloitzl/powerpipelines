@@ -1,3 +1,5 @@
+using blogdeployments.power.Handler;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -5,18 +7,20 @@ namespace blogdeployments.power.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PowerControllerController : ControllerBase
+public class PowerController : ControllerBase
 {
-    private readonly ILogger<PowerControllerController> _logger;
+    private readonly ILogger<PowerController> _logger;
     private readonly IOptions<RabbitMqConfiguration> _rabbitMqOptions;
+    private readonly IMediator _mediator;
 
-    public PowerControllerController(
-        ILogger<PowerControllerController> logger, 
-        IOptions<RabbitMqConfiguration> rabbitMqOptions)
+    public PowerController(
+        ILogger<PowerController> logger,
+        IOptions<RabbitMqConfiguration> rabbitMqOptions,
+        IMediator mediator)
     {
         _logger = logger;
         _rabbitMqOptions = rabbitMqOptions;
-        System.Console.WriteLine(rabbitMqOptions.Value.QueueName);
+        _mediator = mediator;
     }
 
     [HttpGet(Name = "GetStatus")]
@@ -26,15 +30,17 @@ public class PowerControllerController : ControllerBase
     }
 
     [HttpPost(Name = "On")]
-    public bool On()
+    [Route("on")]
+    public Task<bool> On()
     {
-        return false;
+        return _mediator.Send(new PowerOn());
     }
 
     [HttpPost(Name = "Off")]
-    public bool Off()
+    [Route("off")]
+    public Task<bool> Off()
     {
-        return false;
+        return _mediator.Send(new PowerOff());
     }
 
 }
