@@ -1,4 +1,6 @@
 using System.Text;
+using blogdeployments.power.Handler;
+using MediatR;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -9,17 +11,19 @@ namespace blogdeployments.power.Service
     {
         private readonly ILogger<RabbitMQService> _logger;
         private readonly IOptions<RabbitMqConfiguration> _rabbitMqOptions;
+        private readonly IMediator _mediator;
         private IConnection _connection;
         private IModel _channel;
         private string _queueName;
 
         public RabbitMQService(
             ILogger<RabbitMQService> logger,
-            IOptions<RabbitMqConfiguration> rabbitMqOptions)
+            IOptions<RabbitMqConfiguration> rabbitMqOptions,
+            IMediator mediator)
         {
             _logger = logger;
             _rabbitMqOptions = rabbitMqOptions;
-            _queueName = _rabbitMqOptions.Value.QueueName;
+            _mediator = mediator;
 
             var factory = new ConnectionFactory
             {
@@ -28,8 +32,11 @@ namespace blogdeployments.power.Service
 
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
-
+            _channel.ExchangeDeclare(exchange: "deployments_exchange", type: "direct");
+            _queueName = _channel.QueueDeclare().QueueName;
+            _channel.QueueBind(queue: _queueName,
+                                  exchange: "deployments_exchange",
+                                  routingKey: "routingKey");
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -41,11 +48,20 @@ namespace blogdeployments.power.Service
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine(" [x] Received {0}", message);
-                // _channel.BasicAck(ea.DeliveryTag, false);
+                // todo: deserialize to Domain Object Deployment
+                HandleMessage(message);
             };
             _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
 
             return Task.CompletedTask;
+        }
+
+        private void HandleMessage(string message)
+        {
+            // note: return value swallowed
+            _mediator.Send(new PowerOn());
+            Thread.Sleep(3000);
+            _mediator.Send(new PowerOff());
         }
 
         public override void Dispose()

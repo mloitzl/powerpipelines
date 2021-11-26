@@ -1,5 +1,6 @@
 using System.Reflection;
 using blogdeployments.api;
+using blogdeployments.api.Sender;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;
 using MediatR;
@@ -65,6 +66,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+builder.Services.AddAutoMapper(
+    Assembly.GetExecutingAssembly(), 
+    typeof(IDeploymentsRepository).Assembly);
+
+builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.AddTransient<IRegisterDeploymentSender, RegisterDeploymentSender>();
+builder.Services.AddSingleton<IDeploymentsRepository, DeploymentsRepository>();
 
 var app = builder.Build();
 

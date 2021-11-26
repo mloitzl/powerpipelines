@@ -7,6 +7,7 @@
     <UserSecretsId>blogdeployments.api</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="CouchDB.NET.DependencyInjection" Version="3.1.1" />
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
@@ -17,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\blogdeployments.repository\blogdeployments.repository.csproj" />
+    <ProjectReference Include="..\blogdeployments.domain\blogdeployments.domain.csproj" />
   </ItemGroup>
 
 </Project>
