@@ -11,12 +11,18 @@ namespace blogdeployments.api.Controllers;
 public class PingController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ILogger<PingController> _logger;
 
-    public PingController(IMediator mediator) => _mediator = mediator;
+    public PingController(IMediator mediator, ILogger<PingController> logger)
+    {
+        _mediator = mediator;
+        _logger = logger;
+    }
 
     [HttpGet(Name = "Send")]
     public Task<string> Get()
     {
+        _logger.LogInformation("Received Ping");
         return _mediator.Send(new Ping());
     }
 }
