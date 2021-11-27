@@ -1,5 +1,4 @@
-﻿using blogdeployments.domain;
-using CouchDB.Driver;
+﻿using CouchDB.Driver;
 using CouchDB.Driver.Options;
 
 namespace blogdeployments.repository;

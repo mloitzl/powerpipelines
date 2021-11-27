@@ -54,12 +54,14 @@ builder.Services.AddAuthorization(options =>
         );
 });
 
+var couchDbHost = $"{builder.Configuration["couchdb:proto"]}://{builder.Configuration["couchdb:host"]}:{builder.Configuration["couchdb:port"]}";
+
 builder.Services.AddCouchContext<DeploymentsContext>(optionBuilder => optionBuilder
-    .UseEndpoint("http://localhost:5984/")
+    .UseEndpoint(couchDbHost)
     .EnsureDatabaseExists()
     .UseBasicAuthentication(
-        username: builder.Configuration["couchdb_user"],
-        password: builder.Configuration["couchdb_password"]));
+        username: builder.Configuration["couchdb:user"],
+        password: builder.Configuration["couchdb:password"]));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
