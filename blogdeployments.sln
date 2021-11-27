@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.power", "bl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.repository", "blogdeployments.repository\blogdeployments.repository.csproj", "{AAC3E1C2-9101-4664-9AB1-281A1F524781}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.shutdown", "blogdeployments.shutdown\blogdeployments.shutdown.csproj", "{ACE177FA-8B81-4E57-A1F7-E1E6AFA40C5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{AAC3E1C2-9101-4664-9AB1-281A1F524781}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAC3E1C2-9101-4664-9AB1-281A1F524781}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAC3E1C2-9101-4664-9AB1-281A1F524781}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACE177FA-8B81-4E57-A1F7-E1E6AFA40C5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACE177FA-8B81-4E57-A1F7-E1E6AFA40C5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACE177FA-8B81-4E57-A1F7-E1E6AFA40C5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACE177FA-8B81-4E57-A1F7-E1E6AFA40C5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
