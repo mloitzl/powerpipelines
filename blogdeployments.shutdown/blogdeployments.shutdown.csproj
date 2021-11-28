@@ -7,4 +7,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <Target Name="Service" AfterTargets="AfterBuild">
+    <Copy SourceFiles="system.d/send_shutdown_notification.service" DestinationFolder="$(PublishDir)" />
+  </Target>
+  <Target Name="Script" AfterTargets="Publish">
+    <Copy SourceFiles="system.d/send_shutdown_notification.sh" DestinationFolder="$(PublishDir)" />
+  </Target>
+
 </Project>
