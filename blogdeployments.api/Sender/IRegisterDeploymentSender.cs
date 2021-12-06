@@ -35,8 +35,12 @@ public class RegisterDeploymentSender : IRegisterDeploymentSender
             var msg = JsonSerializer.Serialize(deployment);
 
             //            channel.BasicPublish(exchange: "", routingKey: _options.Value.RoutingKey, basicProperties: null, body: Encoding.UTF8.GetBytes(msg));
+
+            // todo: the only difference is the routingkey, it seems that 
+            // - this can all get to a templated baseclass
+            // - and/or receive different Pocos in the Send() call
             channel.BasicPublish(exchange: "deployments_exchange",
-                                             routingKey: "routingKey",
+                                             routingKey: "registerDeployment",
                                              mandatory: false,
                                              basicProperties: null,
                                              body: Encoding.UTF8.GetBytes(msg));

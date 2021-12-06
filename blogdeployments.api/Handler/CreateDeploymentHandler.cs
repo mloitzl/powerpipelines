@@ -1,16 +1,14 @@
 using AutoMapper;
-using blogdeployments.api.Sender;
 using blogdeployments.domain;
 using blogdeployments.repository;
 using MediatR;
 
-namespace blogdeployments.api.Handler
+namespace blogdeployments.api.Handler;
+
+public class CreateDeployment : IRequest<Deployment>
 {
-    public class CreateDeployment : IRequest<Deployment>
-    {
-        public string? Hash { get; set; }
-        public string? FriendlyName { get; set; }
-    }
+    public string? Hash { get; set; }
+    public string? FriendlyName { get; set; }
 
     public class CreateDeploymentHandler : IRequestHandler<CreateDeployment, Deployment>
     {
@@ -31,5 +29,4 @@ namespace blogdeployments.api.Handler
             return _mapper.Map<Deployment>(await _repository.CreateDeployment(deployment));
         }
     }
-
 }

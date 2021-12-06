@@ -1,7 +1,5 @@
-namespace blogdeployments.api
+namespace blogdeployments.api;
+public static class AppRole
 {
-    public static class AppRole
-    {
-        public const string AppRoleConfigManage = "AppRole.Config.Manage";
-    }
+    public const string AppRoleConfigManage = "AppRole.Config.Manage";
 }
