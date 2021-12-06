@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace blogdeployments.api.Controllers;
 
-
 [ApiController]
 [Route("[controller]")]
 [Authorize]
@@ -26,9 +25,19 @@ public class DeploymentsController : ControllerBase
     }
 
     [HttpPost(Name = "Register")]
+    [Route("register")]
     public Task<Deployment> Register(DeploymentViewModel model)
     {
         _logger.LogInformation("Received Register");
         return _mediator.Send(_mapper.Map<RegisterDeployment>(model));
+
+    }
+
+    [HttpPost(Name = "Complete")]
+    [Route("complete")]
+    public Task<Deployment> Complete(DeploymentViewModel model)
+    {
+        _logger.LogInformation("Completing...");
+        return _mediator.Send(_mapper.Map<CompleteDeployment>(model));
     }
 }

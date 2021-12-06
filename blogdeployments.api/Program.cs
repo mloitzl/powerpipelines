@@ -74,6 +74,7 @@ builder.Services.AddAutoMapper(
 
 builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddTransient<IRegisterDeploymentSender, RegisterDeploymentSender>();
+builder.Services.AddTransient<ICompleteDeploymentSender, CompleteDeploymentSender>();
 builder.Services.AddSingleton<IDeploymentsRepository, DeploymentsRepository>();
 
 var app = builder.Build();

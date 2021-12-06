@@ -9,8 +9,10 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<RegisterDeployment, Deployment>();
+        CreateMap<CompleteDeployment, Deployment>();
         CreateMap<CreateDeployment, Deployment>();
         CreateMap<DeploymentViewModel, RegisterDeployment>();
+        CreateMap<DeploymentViewModel, CompleteDeployment>();
         CreateMap<Deployment, CreateDeployment>();
     }
 }

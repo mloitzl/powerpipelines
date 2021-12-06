@@ -10,7 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.Configure<RaspbeeConfiguration>(builder.Configuration.GetSection("Raspbee"));
 
-builder.Services.AddHostedService<RabbitMQService>();
+builder.Services.AddHostedService<RegisterDeploymentRabbitMQService>();
+builder.Services.AddHostedService<CompleteDeploymentRabbitMQService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
