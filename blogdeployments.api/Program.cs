@@ -1,6 +1,9 @@
 using System.Reflection;
 using blogdeployments.api;
 using blogdeployments.api.Sender;
+using blogdeployments.domain;
+using blogdeployments.domain.Events;
+using blogdeployments.events;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;
 using MediatR;
@@ -9,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.OpenApi.Models;
 
 string sharePointUri = "sharePointUri";
 
@@ -22,7 +26,7 @@ builder.Services.AddCors(options =>
                         options.AddPolicy(name: sharePointUri,
                                     builder =>
                                     {
-                                        builder.WithOrigins("https://*.sharepoint.com")
+                                        builder.WithOrigins("https://*.sharepoint.com", "https://localhost:7099")
                                             .SetIsOriginAllowedToAllowWildcardSubdomains()
                                             .AllowCredentials()
                                             .AllowAnyHeader()
@@ -65,7 +69,41 @@ builder.Services.AddCouchContext<DeploymentsContext>(optionBuilder => optionBuil
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+    {
+        options.EnableAnnotations();
+        options.AddSecurityDefinition(
+            "oauth2", new OpenApiSecurityScheme()
+            {
+                Description = "Oauth2 client credentials",
+                Name = "Authorization",
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows()
+                {
+                    /*AuthorizationCode = new OpenApiOAuthFlow()
+                    {
+                        AuthorizationUrl = new Uri("https://login.microsoftonline.com/60df2466-a102-404a-8d9d-95c950626730/oauth2/v2.0/authorize"),
+                        TokenUrl = new Uri("https://login.microsoftonline.com/60df2466-a102-404a-8d9d-95c950626730/oauth2/v2.0/token"),
+                        Scopes = new Dictionary<string, string>
+                        {
+                            { "api://com.loitzl.test/blogdeployments/.default", "Reads the Weather forecast" }
+                        }
+                      
+                    },
+                    ClientCredentials = new OpenApiOAuthFlow
+                    {
+                        AuthorizationUrl = new Uri("https://login.microsoftonline.com/60df2466-a102-404a-8d9d-95c950626730/oauth2/v2.0/authorize"),
+                        TokenUrl = new Uri("https://login.microsoftonline.com/60df2466-a102-404a-8d9d-95c950626730/oauth2/v2.0/token"),
+                        Scopes = new Dictionary<string, string>
+                        {
+                            { "api://com.loitzl.test/blogdeployments/.default", "Reads the Weather forecast" }
+                        }
+                    }*/
+                }
+            }
+            );
+    }
+);
 
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 builder.Services.AddAutoMapper(
@@ -73,8 +111,9 @@ builder.Services.AddAutoMapper(
     typeof(IDeploymentsRepository).Assembly);
 
 builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));
-builder.Services.AddTransient<IRegisterDeploymentSender, RegisterDeploymentSender>();
-builder.Services.AddTransient<ICompleteDeploymentSender, CompleteDeploymentSender>();
+builder.Services.AddTransient<IEventSender<PowerOnRequested>, PowerOnRequestedEventSender>();
+builder.Services.AddTransient<IEventSender<ShutdownRequested>, ShutdownRequestedEventSender>();
+
 builder.Services.AddSingleton<IDeploymentsRepository, DeploymentsRepository>();
 
 var app = builder.Build();

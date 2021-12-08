@@ -29,15 +29,15 @@ public class PowerController : ControllerBase
         return false;
     }
 
-    [HttpPost(Name = "On")]
-    [Route("on")]
+    [HttpPost(template:"on", Name = "On")]
+    //[Route("on")]
     public Task<bool> On()
     {
         return _mediator.Send(new PowerOn());
     }
 
-    [HttpPost(Name = "Off")]
-    [Route("off")]
+    [HttpPost(template: "off", Name = "Off")]
+    //[Route("off")]
     public Task<bool> Off()
     {
         return _mediator.Send(new PowerOff());

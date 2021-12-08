@@ -5,6 +5,7 @@ using blogdeployments.domain;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace blogdeployments.api.Controllers;
 
@@ -24,17 +25,20 @@ public class DeploymentsController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost(Name = "Register")]
-    [Route("register")]
+    [HttpPost(template:"register", Name = "Register")]
+    //[Route("register")]
+    [SwaggerOperation("register")]
+    [ProducesResponseType(typeof(DeploymentViewModel), 200)]
     public Task<Deployment> Register(DeploymentViewModel model)
     {
         _logger.LogInformation("Received Register");
         return _mediator.Send(_mapper.Map<RegisterDeployment>(model));
-
     }
 
-    [HttpPost(Name = "Complete")]
-    [Route("complete")]
+    [HttpPost(template:"complete", Name = "Complete")]
+    //[Route("complete")]
+    [SwaggerOperation("complete")]
+    [ProducesResponseType(typeof(DeploymentViewModel), 200)]
     public Task<Deployment> Complete(DeploymentViewModel model)
     {
         _logger.LogInformation("Completing...");

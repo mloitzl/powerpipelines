@@ -15,6 +15,7 @@ public class PowerOff : IRequest<bool>
         }
         public Task<bool> Handle(PowerOff request, CancellationToken cancellationToken)
         {
+            // todo: Wait for ping to fail
             return Task.FromResult(_raspbeeService.PowerOff());
         }
     }
