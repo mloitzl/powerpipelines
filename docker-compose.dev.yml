@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  couchdb:
+    image: couchdb:3.2.0
+    hostname: couchdb
+    ports:
+      - "5984:5984"
+    volumes:
+      - ~/.secrets/couchdb/local.ini:/opt/couchdb/etc/local.ini
+
+  rabbitmq:
+    image: rabbitmq:3.8.8-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"

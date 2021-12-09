@@ -9,6 +9,10 @@ public class MappingProfile: Profile
     public MappingProfile()
     {
         CreateMap<PowerOnRequested, PowerOn>();
-        CreateMap<ShutdownInitiated, PowerOff>();
+        CreateMap<ShutdownInitiated, CheckHostStatus>().ForMember(
+            dest => dest.Adresses,
+            opt =>
+                opt.MapFrom(src =>
+                    src.Adresses));
     }
 }

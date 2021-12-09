@@ -12,12 +12,12 @@ public class Shutdown : IRequest<bool>
     public class ShutdownHandler : IRequestHandler<Shutdown, bool>
     {
         private readonly IEventSender<ShutdownInitiated> _sender;
-        private readonly IOptions<AgentConfigration> _options;
+        private readonly IOptions<AgentConfiguration> _options;
         private readonly ILogger<ShutdownHandler> _logger;
 
         public ShutdownHandler(
             IEventSender<ShutdownInitiated> sender, 
-            IOptions<AgentConfigration> options,
+            IOptions<AgentConfiguration> options,
             ILogger<ShutdownHandler> logger)
         
         {
@@ -26,11 +26,13 @@ public class Shutdown : IRequest<bool>
             _logger = logger;
         }
 
-        public Task<bool> Handle(Shutdown request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(Shutdown request, CancellationToken cancellationToken)
         {
-            _sender.Send(new ShutdownInitiated());
-
-            if (_options.Value.DryRun) return Task.FromResult(true);
+            var hostName = System.Net.Dns.GetHostName();
+            var adresses = await System.Net.Dns.GetHostAddressesAsync(hostName);
+            
+            _sender.Send(new ShutdownInitiated(adresses));
+            if (_options.Value.DryRun) return true;
             
             _logger.LogDebug("Trying to send shutdown native call...");
             

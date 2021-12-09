@@ -1,6 +1,6 @@
 namespace blogdeployments.agent;
 
-public class AgentConfigration
+public class AgentConfiguration
 {
     public bool DryRun { get; set; } = false;
 }

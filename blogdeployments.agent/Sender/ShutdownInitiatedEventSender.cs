@@ -4,12 +4,11 @@ using Microsoft.Extensions.Options;
 
 namespace blogdeployments.agent.Sender;
 
-
-public class PowerOnCompletedEventSender : EventSender<PowerOnCompleted>
+public class ShutdownInitiatedEventSender : EventSender<ShutdownInitiated>
 {
-    public PowerOnCompletedEventSender(
+    public ShutdownInitiatedEventSender(
         IOptions<RabbitMqConfiguration> options, 
-        ILogger<EventSender<PowerOnCompleted>> logger) : base(options, logger)
+        ILogger<EventSender<ShutdownInitiated>> logger) : base(options, logger)
     {
     }
 }
