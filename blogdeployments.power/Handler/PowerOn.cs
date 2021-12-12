@@ -13,12 +13,10 @@ public class PowerOn : IRequest<bool>
         {
             _raspbeeService = raspbeeService;
         }
+
         public Task<bool> Handle(PowerOn request, CancellationToken cancellationToken)
         {
             return Task.FromResult(_raspbeeService.PowerOn());
         }
     }
 }
-
-
-

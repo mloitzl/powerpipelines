@@ -10,8 +10,8 @@ namespace blogdeployments.power.Controllers;
 public class PowerController : ControllerBase
 {
     private readonly ILogger<PowerController> _logger;
-    private readonly IOptions<RabbitMqConfiguration> _rabbitMqOptions;
     private readonly IMediator _mediator;
+    private readonly IOptions<RabbitMqConfiguration> _rabbitMqOptions;
 
     public PowerController(
         ILogger<PowerController> logger,
@@ -29,18 +29,15 @@ public class PowerController : ControllerBase
         return false;
     }
 
-    [HttpPost(template:"on", Name = "On")]
-    //[Route("on")]
+    [HttpPost("on", Name = "On")]
     public Task<bool> On()
     {
         return _mediator.Send(new PowerOn());
     }
 
-    [HttpPost(template: "off", Name = "Off")]
-    //[Route("off")]
+    [HttpPost("off", Name = "Off")]
     public Task<bool> Off()
     {
         return _mediator.Send(new PowerOff());
     }
-
 }

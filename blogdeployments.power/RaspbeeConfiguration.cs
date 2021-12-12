@@ -1,6 +1,5 @@
 namespace blogdeployments.power;
 
-
 public class RaspbeeConfiguration
 {
     public string? Proto { get; set; }

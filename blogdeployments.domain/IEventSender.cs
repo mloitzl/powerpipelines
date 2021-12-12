@@ -5,4 +5,3 @@ public interface IEventSender<T>
 {
     Task Send(T @event);
 }
-

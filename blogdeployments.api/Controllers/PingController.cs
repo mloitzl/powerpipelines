@@ -10,8 +10,8 @@ namespace blogdeployments.api.Controllers;
 [Authorize]
 public class PingController : ControllerBase
 {
-    private readonly IMediator _mediator;
     private readonly ILogger<PingController> _logger;
+    private readonly IMediator _mediator;
 
     public PingController(IMediator mediator, ILogger<PingController> logger)
     {

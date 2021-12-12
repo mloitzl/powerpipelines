@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.events", "b
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.domain", "blogdeployments.domain\blogdeployments.domain.csproj", "{15059680-9B04-461D-8B0A-F5EECE50393D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.power.tests", "blogdeployments.power.tests\blogdeployments.power.tests.csproj", "{060A3E33-5829-4220-BA60-E4DF2CF7345C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +56,9 @@ Global
 		{15059680-9B04-461D-8B0A-F5EECE50393D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15059680-9B04-461D-8B0A-F5EECE50393D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15059680-9B04-461D-8B0A-F5EECE50393D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{060A3E33-5829-4220-BA60-E4DF2CF7345C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{060A3E33-5829-4220-BA60-E4DF2CF7345C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{060A3E33-5829-4220-BA60-E4DF2CF7345C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{060A3E33-5829-4220-BA60-E4DF2CF7345C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

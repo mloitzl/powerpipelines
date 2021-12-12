@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <Target Name="Service" AfterTargets="AfterBuild">
-    <Copy SourceFiles="system.d/send_shutdown_notification.service" DestinationFolder="$(PublishDir)" />
-  </Target>
-  <Target Name="Script" AfterTargets="Publish">
-    <Copy SourceFiles="system.d/send_shutdown_notification.sh" DestinationFolder="$(PublishDir)" />
-  </Target>
+    <Target Name="Service" AfterTargets="AfterBuild">
+        <Copy SourceFiles="system.d/send_shutdown_notification.service" DestinationFolder="$(PublishDir)"/>
+    </Target>
+    <Target Name="Script" AfterTargets="Publish">
+        <Copy SourceFiles="system.d/send_shutdown_notification.sh" DestinationFolder="$(PublishDir)"/>
+    </Target>
 
 </Project>

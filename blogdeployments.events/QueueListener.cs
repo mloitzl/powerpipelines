@@ -14,14 +14,14 @@ namespace blogdeployments.events;
 public class QueueListener<TEvent, TCommand> : BackgroundService
     where TEvent : IEvent
 {
-    private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
-    private readonly IOptions<RabbitMqConfiguration> _rabbitMqOptions;
     private readonly ILogger<QueueListener<TEvent, TCommand>> _logger;
+    private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
+    private readonly IOptions<RabbitMqConfiguration> _rabbitMqOptions;
+    private readonly IModel _channel;
 
-    private IConnection _connection;
-    private IModel _channel;
-    private string _queueName;
+    private readonly IConnection _connection;
+    private readonly string _queueName;
 
     public QueueListener(
         IMediator mediator,
@@ -33,7 +33,7 @@ public class QueueListener<TEvent, TCommand> : BackgroundService
         _mapper = mapper;
         _rabbitMqOptions = rabbitMqOptions;
         _logger = logger;
-            
+
         var factory = new ConnectionFactory
         {
             HostName = _rabbitMqOptions.Value.Hostname
@@ -41,17 +41,17 @@ public class QueueListener<TEvent, TCommand> : BackgroundService
 
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _channel.ExchangeDeclare(exchange: "deployments_exchange", type: "direct");
+        _channel.ExchangeDeclare("deployments_exchange", "direct");
         _queueName = _channel.QueueDeclare().QueueName;
 
         // todo: the only difference is the routingkey, it seems that 
         // - this can all get to a templated baseclass
         // - and/or receive different Pocos in the Send() call
-        _channel.QueueBind(queue: _queueName,
-            exchange: "deployments_exchange",
-            routingKey:  typeof(TEvent).FullName);
-
+        _channel.QueueBind(_queueName,
+            "deployments_exchange",
+            typeof(TEvent).FullName);
     }
+
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
@@ -61,24 +61,22 @@ public class QueueListener<TEvent, TCommand> : BackgroundService
         {
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
-            
+
             _logger.LogDebug("[RX] Received ({Type}) {Message}", typeof(TEvent).FullName, message);
-            // todo: deserialize to Domain Object Deployment
             
-            HandleMessage(JsonSerializer.Deserialize<TEvent>( message ));
+            HandleMessage(JsonSerializer.Deserialize<TEvent>(message));
         };
-        _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
+        _channel.BasicConsume(_queueName, true, consumer);
 
         return Task.CompletedTask;
     }
+
     private void HandleMessage(TEvent? message)
     {
         // note: return value swallowed
-        // todo: map message to command
-
         _logger.LogDebug("[RX] Dispatching ({Type}) {Message}", typeof(TCommand).FullName, message);
         var command = _mapper.Map<TCommand>(message);
-        
+
         _mediator.Send(command);
     }
 }

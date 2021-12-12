@@ -12,8 +12,8 @@ public class CreateDeployment : IRequest<Deployment>
 
     public class CreateDeploymentHandler : IRequestHandler<CreateDeployment, Deployment>
     {
-        private readonly IDeploymentsRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IDeploymentsRepository _repository;
 
         public CreateDeploymentHandler(
             IDeploymentsRepository repository,
@@ -22,6 +22,7 @@ public class CreateDeployment : IRequest<Deployment>
             _repository = repository;
             _mapper = mapper;
         }
+
         public async Task<Deployment> Handle(CreateDeployment createDeployment, CancellationToken cancellationToken)
         {
             var deployment = _mapper.Map<Deployment>(createDeployment);

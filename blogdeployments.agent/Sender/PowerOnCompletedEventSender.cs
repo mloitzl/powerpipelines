@@ -4,11 +4,10 @@ using Microsoft.Extensions.Options;
 
 namespace blogdeployments.agent.Sender;
 
-
 public class PowerOnCompletedEventSender : EventSender<PowerOnCompleted>
 {
     public PowerOnCompletedEventSender(
-        IOptions<RabbitMqConfiguration> options, 
+        IOptions<RabbitMqConfiguration> options,
         ILogger<EventSender<PowerOnCompleted>> logger) : base(options, logger)
     {
     }

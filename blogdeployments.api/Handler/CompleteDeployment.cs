@@ -1,5 +1,4 @@
 using AutoMapper;
-using blogdeployments.api.Sender;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
 using MediatR;
@@ -10,11 +9,12 @@ public class CompleteDeployment : IRequest<Deployment>
 {
     public string? Hash { get; set; }
     public string? FriendlyName { get; set; }
+
     public class CompleteDeploymentHandler : IRequestHandler<CompleteDeployment, Deployment>
     {
-        private readonly IEventSender<ShutdownRequested> _sender;
-        private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
+        private readonly IEventSender<ShutdownRequested> _sender;
 
         public CompleteDeploymentHandler(
             IEventSender<ShutdownRequested> sender,

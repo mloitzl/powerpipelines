@@ -7,7 +7,7 @@ namespace blogdeployments.agent.Sender;
 public class ShutdownInitiatedEventSender : EventSender<ShutdownInitiated>
 {
     public ShutdownInitiatedEventSender(
-        IOptions<RabbitMqConfiguration> options, 
+        IOptions<RabbitMqConfiguration> options,
         ILogger<EventSender<ShutdownInitiated>> logger) : base(options, logger)
     {
     }

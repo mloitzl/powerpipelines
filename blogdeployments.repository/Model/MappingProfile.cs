@@ -7,7 +7,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<blogdeployments.repository.DeploymentDocument, Deployment>();
-        CreateMap<Deployment, blogdeployments.repository.DeploymentDocument>();
+        CreateMap<DeploymentDocument, Deployment>();
+        CreateMap<Deployment, DeploymentDocument>();
     }
 }

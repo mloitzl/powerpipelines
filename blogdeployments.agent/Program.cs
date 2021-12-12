@@ -8,7 +8,6 @@ using blogdeployments.domain.Events;
 using blogdeployments.events;
 using MediatR;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

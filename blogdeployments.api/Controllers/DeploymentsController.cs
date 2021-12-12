@@ -14,9 +14,9 @@ namespace blogdeployments.api.Controllers;
 [Authorize]
 public class DeploymentsController : ControllerBase
 {
-    private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
     private readonly ILogger<DeploymentsController> _logger;
+    private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
 
     public DeploymentsController(IMediator mediator, IMapper mapper, ILogger<DeploymentsController> logger)
     {
@@ -25,8 +25,7 @@ public class DeploymentsController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost(template:"register", Name = "Register")]
-    //[Route("register")]
+    [HttpPost("register", Name = "Register")]
     [SwaggerOperation("register")]
     [ProducesResponseType(typeof(DeploymentViewModel), 200)]
     public Task<Deployment> Register(DeploymentViewModel model)
@@ -35,8 +34,7 @@ public class DeploymentsController : ControllerBase
         return _mediator.Send(_mapper.Map<RegisterDeployment>(model));
     }
 
-    [HttpPost(template:"complete", Name = "Complete")]
-    //[Route("complete")]
+    [HttpPost("complete", Name = "Complete")]
     [SwaggerOperation("complete")]
     [ProducesResponseType(typeof(DeploymentViewModel), 200)]
     public Task<Deployment> Complete(DeploymentViewModel model)

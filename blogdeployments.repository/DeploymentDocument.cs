@@ -1,10 +1,9 @@
 using CouchDB.Driver.Types;
 
-namespace blogdeployments.repository
+namespace blogdeployments.repository;
+
+public class DeploymentDocument : CouchDocument
 {
-    public class DeploymentDocument : CouchDocument
-    {
-        public string? Hash { get; set; }
-        public string? FriendlyName { get; set; }
-    }
+    public string? Hash { get; set; }
+    public string? FriendlyName { get; set; }
 }

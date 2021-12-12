@@ -14,9 +14,7 @@ builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSecti
 builder.Services.Configure<RaspbeeConfiguration>(builder.Configuration.GetSection("Raspbee"));
 
 builder.Services.AddHostedService<QueueListener<PowerOnRequested, PowerOn>>();
-//builder.Services.AddHostedService<QueueListener<ShutdownInitiated, PowerOff>>();
-builder.Services.AddHostedService<QueueListener<ShutdownInitiated, CheckHostStatus>>(); 
-// builder.Services.AddHostedService<QueueListener<ShutdownCompleted, PowerOff>>();
+builder.Services.AddHostedService<QueueListener<ShutdownInitiated, CheckHostStatus>>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

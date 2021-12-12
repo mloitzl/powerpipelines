@@ -3,7 +3,6 @@ using blogdeployments.api;
 using blogdeployments.api.Sender;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
-using blogdeployments.events;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;
 using MediatR;
@@ -14,7 +13,7 @@ using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
 
-string sharePointUri = "sharePointUri";
+var sharePointUri = "sharePointUri";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,21 +21,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
-                    {
-                        options.AddPolicy(name: sharePointUri,
-                                    builder =>
-                                    {
-                                        builder.WithOrigins("https://*.sharepoint.com", "https://localhost:7099")
-                                            .SetIsOriginAllowedToAllowWildcardSubdomains()
-                                            .AllowCredentials()
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod();
-                                    });
-                    });
+{
+    options.AddPolicy(sharePointUri,
+        builder =>
+        {
+            builder.WithOrigins("https://*.sharepoint.com", "https://localhost:7099")
+                .SetIsOriginAllowedToAllowWildcardSubdomains()
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
-    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
 IdentityModelEventSource.ShowPII = true;
@@ -55,17 +54,18 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(
         AuthorizationPolicies.ConfigManageRequired,
         policy => policy.RequireRole(AppRole.AppRoleConfigManage)
-        );
+    );
 });
 
-var couchDbHost = $"{builder.Configuration["couchdb:proto"]}://{builder.Configuration["couchdb:host"]}:{builder.Configuration["couchdb:port"]}";
+var couchDbHost =
+    $"{builder.Configuration["couchdb:proto"]}://{builder.Configuration["couchdb:host"]}:{builder.Configuration["couchdb:port"]}";
 
 builder.Services.AddCouchContext<DeploymentsContext>(optionBuilder => optionBuilder
     .UseEndpoint(couchDbHost)
     .EnsureDatabaseExists()
     .UseBasicAuthentication(
-        username: builder.Configuration["couchdb:user"],
-        password: builder.Configuration["couchdb:password"]));
+        builder.Configuration["couchdb:user"],
+        builder.Configuration["couchdb:password"]));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -73,12 +73,12 @@ builder.Services.AddSwaggerGen(options =>
     {
         options.EnableAnnotations();
         options.AddSecurityDefinition(
-            "oauth2", new OpenApiSecurityScheme()
+            "oauth2", new OpenApiSecurityScheme
             {
                 Description = "Oauth2 client credentials",
                 Name = "Authorization",
                 Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows()
+                Flows = new OpenApiOAuthFlows
                 {
                     /*AuthorizationCode = new OpenApiOAuthFlow()
                     {
@@ -101,13 +101,13 @@ builder.Services.AddSwaggerGen(options =>
                     }*/
                 }
             }
-            );
+        );
     }
 );
 
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 builder.Services.AddAutoMapper(
-    Assembly.GetExecutingAssembly(), 
+    Assembly.GetExecutingAssembly(),
     typeof(IDeploymentsRepository).Assembly);
 
 builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));

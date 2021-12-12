@@ -13,6 +13,7 @@ public class PowerOff : IRequest<bool>
         {
             _raspbeeService = raspbeeService;
         }
+
         public Task<bool> Handle(PowerOff request, CancellationToken cancellationToken)
         {
             // todo: Wait for ping to fail
@@ -20,6 +21,3 @@ public class PowerOff : IRequest<bool>
         }
     }
 }
-
-
-

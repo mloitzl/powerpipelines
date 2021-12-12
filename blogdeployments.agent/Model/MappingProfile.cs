@@ -10,5 +10,4 @@ public class MappingProfile : Profile
     {
         CreateMap<ShutdownRequested, Shutdown>();
     }
-    
 }

@@ -1,7 +1,6 @@
 using AutoMapper;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
-using blogdeployments.events;
 using MediatR;
 
 namespace blogdeployments.api.Handler;
@@ -13,9 +12,9 @@ public class RegisterDeployment : IRequest<Deployment>
 
     public class RegisterDeploymentHandler : IRequestHandler<RegisterDeployment, Deployment>
     {
-        private readonly IEventSender<PowerOnRequested> _sender;
-        private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
+        private readonly IEventSender<PowerOnRequested> _sender;
 
         public RegisterDeploymentHandler(
             IEventSender<PowerOnRequested> sender,

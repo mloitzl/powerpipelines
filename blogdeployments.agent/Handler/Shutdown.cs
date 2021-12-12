@@ -1,3 +1,4 @@
+using System.Net;
 using System.Runtime.InteropServices;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
@@ -11,15 +12,15 @@ public class Shutdown : IRequest<bool>
 {
     public class ShutdownHandler : IRequestHandler<Shutdown, bool>
     {
-        private readonly IEventSender<ShutdownInitiated> _sender;
-        private readonly IOptions<AgentConfiguration> _options;
         private readonly ILogger<ShutdownHandler> _logger;
+        private readonly IOptions<AgentConfiguration> _options;
+        private readonly IEventSender<ShutdownInitiated> _sender;
 
         public ShutdownHandler(
-            IEventSender<ShutdownInitiated> sender, 
+            IEventSender<ShutdownInitiated> sender,
             IOptions<AgentConfiguration> options,
             ILogger<ShutdownHandler> logger)
-        
+
         {
             _sender = sender;
             _options = options;
@@ -28,24 +29,27 @@ public class Shutdown : IRequest<bool>
 
         public async Task<bool> Handle(Shutdown request, CancellationToken cancellationToken)
         {
-            var hostName = System.Net.Dns.GetHostName();
-            var adresses = await System.Net.Dns.GetHostAddressesAsync(hostName);
-            
-            _sender.Send(new ShutdownInitiated(adresses));
+            var hostName = Dns.GetHostName();
+
+            var @event = new ShutdownInitiated();
+            @event.Hostname = hostName;
+
+            await _sender.Send(@event);
+
             if (_options.Value.DryRun) return true;
-            
+
             _logger.LogDebug("Trying to send shutdown native call...");
-            
+
             sync();
             // Int32 ret = reboot(RB_POWER_OFF); // too hard, doesn't run systemd scripts
-            Int32 ret = system("shutdown -h 0");
+            var ret = system("shutdown -h 0");
 
             // todo: check if these are correct for 'system(...)' syscall
             if (ret == 0) throw new InvalidOperationException("reboot(LINUX_REBOOT_CMD_POWER_OFF) returned 0.");
 
             if (ret != -1) throw new InvalidOperationException("Unexpected reboot() return value: " + ret);
 
-            Int32 errno = Marshal.GetLastWin32Error();
+            var errno = Marshal.GetLastWin32Error();
 
             switch (errno)
             {
@@ -57,7 +61,7 @@ public class Shutdown : IRequest<bool>
 
                 case EFAULT:
                 default:
-                    throw new InvalidOperationException("Could not call reboot():" + errno.ToString());
+                    throw new InvalidOperationException("Could not call reboot():" + errno);
             }
         }
     }

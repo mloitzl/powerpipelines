@@ -1,6 +1,7 @@
 using MediatR;
 
 namespace blogdeployments.api.Handler;
+
 public class Ping : IRequest<string>
 {
     public class PingHandler : IRequestHandler<Ping, string>

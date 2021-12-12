@@ -5,7 +5,7 @@ static void Shutdown()
 {
     sync();
     // Int32 ret = reboot(RB_POWER_OFF); // too hard, doesn't run systemd scripts
-    Int32 ret = system("shutdown -h 0");
+    var ret = system("shutdown -h 0");
 
 
     // todo: check if these are correct for 'system(...)' syscall
@@ -13,7 +13,7 @@ static void Shutdown()
 
     if (ret != -1) throw new InvalidOperationException("Unexpected reboot() return value: " + ret);
 
-    Int32 errno = Marshal.GetLastWin32Error();
+    var errno = Marshal.GetLastWin32Error();
     switch (errno)
     {
         case EPERM:
@@ -24,7 +24,7 @@ static void Shutdown()
 
         case EFAULT:
         default:
-            throw new InvalidOperationException("Could not call reboot():" + errno.ToString());
+            throw new InvalidOperationException("Could not call reboot():" + errno);
     }
 }
 

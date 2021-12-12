@@ -12,16 +12,6 @@ public class RaspbeeService : IRaspbeeService
         _configuration = configuration.Value;
     }
 
-    private bool ExecuteRequest(bool flag)
-    {
-        var client = new RestClient($"{_configuration.Proto}://{_configuration.Host}:{_configuration.Port}");
-        var request = new RestRequest($"api/{_configuration.ApiKey}/lights/84:fd:27:ff:fe:47:bb:c3-01/state", Method.PUT);
-
-        request.AddJsonBody(new { on = flag });
-
-        return client.Execute(request).IsSuccessful;
-    }
-
     public bool PowerOff()
     {
         return ExecuteRequest(false);
@@ -31,11 +21,21 @@ public class RaspbeeService : IRaspbeeService
     {
         return ExecuteRequest(true);
     }
+
+    private bool ExecuteRequest(bool flag)
+    {
+        var client = new RestClient($"{_configuration.Proto}://{_configuration.Host}:{_configuration.Port}");
+        var request = new RestRequest($"api/{_configuration.ApiKey}/lights/84:fd:27:ff:fe:47:bb:c3-01/state",
+            Method.PUT);
+
+        request.AddJsonBody(new {on = flag});
+
+        return client.Execute(request).IsSuccessful;
+    }
 }
 
 public interface IRaspbeeService
 {
-
     bool PowerOn();
     bool PowerOff();
 }

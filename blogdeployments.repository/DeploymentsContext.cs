@@ -2,10 +2,13 @@
 using CouchDB.Driver.Options;
 
 namespace blogdeployments.repository;
+
 public class DeploymentsContext : CouchContext
 {
-    public CouchDatabase<DeploymentDocument> Deployments { get; set; }
-
     public DeploymentsContext(CouchOptions<DeploymentsContext> options)
-           : base(options) { }
+        : base(options)
+    {
+    }
+
+    public CouchDatabase<DeploymentDocument> Deployments { get; set; }
 }

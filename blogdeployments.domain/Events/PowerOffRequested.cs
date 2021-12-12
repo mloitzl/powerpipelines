@@ -1,5 +1,5 @@
 namespace blogdeployments.domain.Events;
 
-public class PowerOffRequested: IEvent
+public class PowerOffRequested : IEvent
 {
 }
