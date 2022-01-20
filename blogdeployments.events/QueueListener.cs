@@ -14,14 +14,14 @@ namespace blogdeployments.events;
 public class QueueListener<TEvent, TCommand> : BackgroundService
     where TEvent : IEvent
 {
-    private readonly ILogger<QueueListener<TEvent, TCommand>> _logger;
-    private readonly IMapper _mapper;
-    private readonly IMediator _mediator;
-    private readonly IOptions<RabbitMqConfiguration> _rabbitMqOptions;
     private readonly IModel _channel;
 
     private readonly IConnection _connection;
+    private readonly ILogger<QueueListener<TEvent, TCommand>> _logger;
+    private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
     private readonly string _queueName;
+    private readonly IOptions<RabbitMqConfiguration> _rabbitMqOptions;
 
     public QueueListener(
         IMediator mediator,
@@ -63,7 +63,7 @@ public class QueueListener<TEvent, TCommand> : BackgroundService
             var message = Encoding.UTF8.GetString(body);
 
             _logger.LogDebug("[RX] Received ({Type}) {Message}", typeof(TEvent).FullName, message);
-            
+
             HandleMessage(JsonSerializer.Deserialize<TEvent>(message));
         };
         _channel.BasicConsume(_queueName, true, consumer);

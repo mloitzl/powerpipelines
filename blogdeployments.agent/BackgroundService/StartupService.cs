@@ -1,3 +1,4 @@
+using System.Net;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
 
@@ -14,7 +15,10 @@ public class StartupService : Microsoft.Extensions.Hosting.BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _eventSender.Send(new PowerOnCompleted());
+        _eventSender.Send(new PowerOnCompleted
+        {
+            Hostname = Dns.GetHostName()
+        });
         return Task.CompletedTask;
     }
 }

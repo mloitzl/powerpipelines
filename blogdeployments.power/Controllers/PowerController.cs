@@ -1,4 +1,6 @@
+using blogdeployments.domain;
 using blogdeployments.power.Handler;
+using blogdeployments.repository;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -12,21 +14,24 @@ public class PowerController : ControllerBase
     private readonly ILogger<PowerController> _logger;
     private readonly IMediator _mediator;
     private readonly IOptions<RabbitMqConfiguration> _rabbitMqOptions;
+    private readonly IClusterPowerStatusRepository _statusRepository;
 
     public PowerController(
         ILogger<PowerController> logger,
         IOptions<RabbitMqConfiguration> rabbitMqOptions,
+        IClusterPowerStatusRepository statusRepository,
         IMediator mediator)
     {
         _logger = logger;
         _rabbitMqOptions = rabbitMqOptions;
+        _statusRepository = statusRepository;
         _mediator = mediator;
     }
 
     [HttpGet(Name = "GetStatus")]
-    public bool Get()
+    public async Task<ClusterPowerStatus> Get(string id)
     {
-        return false;
+        return await _statusRepository.GetPowerStatus(id);
     }
 
     [HttpPost("on", Name = "On")]

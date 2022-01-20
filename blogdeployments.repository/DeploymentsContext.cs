@@ -11,4 +11,5 @@ public class DeploymentsContext : CouchContext
     }
 
     public CouchDatabase<DeploymentDocument> Deployments { get; set; }
+    public CouchDatabase<ClusterPowerStatusDocument> ClusterPower { get; set; }
 }

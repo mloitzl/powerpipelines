@@ -31,8 +31,11 @@ public class Shutdown : IRequest<bool>
         {
             var hostName = Dns.GetHostName();
 
-            var @event = new ShutdownInitiated();
-            @event.Hostname = hostName;
+            var @event = new ShutdownInitiated
+            {
+                Hostname = hostName,
+                InitiatedTime = DateTime.Now
+            };
 
             await _sender.Send(@event);
 

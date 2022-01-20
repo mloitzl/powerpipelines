@@ -6,6 +6,7 @@ using blogdeployments.agent.Sender;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
 using blogdeployments.events;
+using blogdeployments.events.EventSender;
 using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);

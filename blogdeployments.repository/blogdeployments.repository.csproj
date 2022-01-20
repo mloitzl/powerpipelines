@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1"/>
-        <PackageReference Include="CouchDb.Net" Version="3.1.1"/>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+        <PackageReference Include="CouchDb.Net" Version="3.1.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\blogdeployments.domain\blogdeployments.domain.csproj"/>
+        <ProjectReference Include="..\blogdeployments.domain\blogdeployments.domain.csproj" />
     </ItemGroup>
 
 </Project>

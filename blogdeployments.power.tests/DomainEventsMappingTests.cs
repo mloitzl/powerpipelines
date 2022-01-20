@@ -12,7 +12,7 @@ public class DomainEventsMappingTests
     {
         var configuration = new MapperConfiguration(cfg =>
             cfg.CreateMap<ShutdownInitiated, CheckHostStatus>());
-        
+
         configuration.AssertConfigurationIsValid();
 
         var mapper = configuration.CreateMapper();
@@ -20,7 +20,7 @@ public class DomainEventsMappingTests
         {
             Hostname = "asasdas"
         };
-        
+
         var expected = mapper.Map<CheckHostStatus>(@event);
 
         Assert.Equal(expected.Hostname, @event.Hostname);

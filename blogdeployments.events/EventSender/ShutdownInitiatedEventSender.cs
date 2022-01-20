@@ -1,8 +1,8 @@
 using blogdeployments.domain.Events;
-using blogdeployments.events;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace blogdeployments.agent.Sender;
+namespace blogdeployments.events.EventSender;
 
 public class ShutdownInitiatedEventSender : EventSender<ShutdownInitiated>
 {

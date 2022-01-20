@@ -10,5 +10,6 @@ public class MappingProfile : Profile
     {
         CreateMap<PowerOnRequested, PowerOn>();
         CreateMap<ShutdownInitiated, CheckHostStatus>();
+        CreateMap<PowerOnCompleted, UpdatePowerStatus>();
     }
 }

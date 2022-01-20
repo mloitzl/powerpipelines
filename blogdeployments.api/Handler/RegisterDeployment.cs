@@ -30,7 +30,10 @@ public class RegisterDeployment : IRequest<Deployment>
         {
             var deployment = _mapper.Map<Deployment>(registerDeployment);
 
-            await _sender.Send(new PowerOnRequested());
+            await _sender.Send(new PowerOnRequested
+            {
+                RequestId = Guid.NewGuid()
+            });
 
             return await _mediator.Send(_mapper.Map<CreateDeployment>(deployment));
         }
