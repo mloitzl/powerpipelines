@@ -1,3 +1,39 @@
+# Power Pipelines
+
+> energy efficient pipelines
+
+A push to a feature branch switches a kubernetes cluster **on**, runs the whole pipeline and later shuts down and switches off the cluster again.
+The **power consumption** of the pipeline run will be measured.
+Other results are captured for later review.
+
+
+## Overview
+
+Highly distributed acrosse different devices:
+- Device 1
+    - hosts the deployments api
+    - controls power and hosts the queue
+- Device 2
+    - hosts the actual build agent
+- Device 2-5
+    - hosts the k3s cluster
+- Device 6
+    - hosts CouchDB for persistence
+
+Microservice architecture
+
+Commands are propagated using RabbitMQ
+
+Commands are received using background services
+
+
+
+## Deployment
+
+- via rsync and bash script
+
+
+# Notes
 
 - `brew install rsync` Update to newest rsync
 
