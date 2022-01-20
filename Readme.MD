@@ -101,3 +101,8 @@ Undo:
 sudo nano /etc/systemd/journald.conf 
 # -> Storage setting
 ```
+
+
+# Event Storming
+
+![Event Storming](https://github.com/mloitzl/powerpipelines/blob/master/doc/img/IMG_9653.jpg)
