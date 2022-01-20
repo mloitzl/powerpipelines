@@ -2,7 +2,7 @@
 
 > energy efficient pipelines
 
-A push to a feature branch switches a kubernetes cluster **on**, runs the whole pipeline and later shuts down and switches off the cluster again.
+A push to a feature branch switches a kubernetes cluster **on**, runs the whole pipeline and later shuts down and switches **off** the cluster again.
 The **power consumption** of the pipeline run will be measured.
 Other results are captured for later review.
 
@@ -84,9 +84,11 @@ Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 WantedBy=multi-user.target
 ```
 
-`$ sudo systemctl enable blogdeployment.api.service`
-`$ sudo systemctl start blogdeployment.api.service`
-`$ journalctl -fu blogdeployment.api.service`
+```sh
+$ sudo systemctl enable blogdeployment.api.service
+$ sudo systemctl start blogdeployment.api.service
+$ journalctl -fu blogdeployment.api.service
+```
 
 
 https://github.com/jguillod/couchdb-on-raspberry-pi
