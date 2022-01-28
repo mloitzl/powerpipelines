@@ -28,17 +28,15 @@ public class UpdatePowerStatus : IRequest<bool>
         public async Task<bool> Handle(UpdatePowerStatus request, CancellationToken cancellationToken)
         {
             _logger.LogDebug("UpdatePowerStatusHandler.Handle");
-            var status = await _clusterPowerStatusRepository.GetPowerStatus(_clusterTopologyConfiguration.ClusterId);
-            
-            _logger.LogDebug("{Hostname}: {PowerStatus} before",request.Hostname, status.HostsPower[request.Hostname].Status);
-            
-            status.HostsPower[request.Hostname].Status = PowerStatus.On;
-            
-            _logger.LogDebug("{Hostname}: {PowerStatus} after", request.Hostname, status.HostsPower[request.Hostname].Status);
 
-            var result = await _clusterPowerStatusRepository.EnsurePowerStatus(status);
+            var result = await _clusterPowerStatusRepository.EnsureHostPowerStatus(_clusterTopologyConfiguration.ClusterId,
+                request.Hostname, new HostPowerStatus
+                {
+                    Hostname = request.Hostname,
+                    Status = PowerStatus.On
+                });
             
-            _logger.LogDebug("{Hostname}: {PowerStatus} db", request.Hostname, result.HostsPower[request.Hostname].Status);
+            _logger.LogDebug("{Hostname}: {PowerStatus} ", request.Hostname, result.Status);
             return true;
         }
     }

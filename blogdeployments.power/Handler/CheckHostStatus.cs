@@ -3,7 +3,10 @@ using System.Net.NetworkInformation;
 using System.Text;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
+using blogdeployments.power.Service;
+using blogdeployments.repository;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace blogdeployments.power.Handler;
 
@@ -15,27 +18,37 @@ public class CheckHostStatus : IRequest<bool>
     // fixme: return bool not necessary
     public class CheckHostStatusHandler : IRequestHandler<CheckHostStatus, bool>
     {
+        private readonly IClusterPowerStatusRepository _clusterPowerStatusRepository;
+        private readonly IOptions<ClusterTopologyConfiguration> _configuration;
         private readonly IEventSender<ShutdownInitiated> _eventSender;
         private readonly ILogger<CheckHostStatusHandler> _logger;
+        private readonly IRaspbeeService _raspbeeService;
 
         public CheckHostStatusHandler(
             IEventSender<ShutdownInitiated> eventSender,
+            IOptions<ClusterTopologyConfiguration> configuration,
+            IClusterPowerStatusRepository clusterPowerStatusRepository,
+            IRaspbeeService raspbeeService,
             ILogger<CheckHostStatusHandler> logger)
         {
             _eventSender = eventSender;
+            _configuration = configuration;
+            _clusterPowerStatusRepository = clusterPowerStatusRepository;
+            _raspbeeService = raspbeeService;
             _logger = logger;
         }
 
-        public Task<bool> Handle(CheckHostStatus request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CheckHostStatus request, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("{Hostname}", request?.Hostname);
             Debug.Assert(request != null, nameof(request) + " != null");
-            _logger.LogDebug("{CheckingSince} s", DateTime.Now.Subtract(request.InitiatedTime).TotalMilliseconds);
+            _logger.LogDebug("{Hostname} {CheckingSince} s", request?.Hostname,
+                DateTime.Now.Subtract(request.InitiatedTime).TotalSeconds);
+
             var who = request.Hostname;
             var pingSender = new Ping();
             var waiter = new AutoResetEvent(false);
 
-            pingSender.PingCompleted += (sender, e) =>
+            pingSender.PingCompleted += async (sender, e) =>
             {
                 if (e.Cancelled)
                 {
@@ -59,6 +72,32 @@ public class CheckHostStatus : IRequest<bool>
 
                 var reply = e.Reply;
 
+                if (reply != null && reply.Status == IPStatus.TimedOut)
+                {
+                    // set host status to off
+                    await _clusterPowerStatusRepository.EnsureHostPowerStatus(_configuration.Value.ClusterId,
+                        request.Hostname, new HostPowerStatus
+                        {
+                            Hostname = request.Hostname,
+                            Status = PowerStatus.Off
+                        });
+
+                    var clusterPowerStatus =
+                        await _clusterPowerStatusRepository.GetPowerStatus(_configuration.Value.ClusterId);
+
+                    var sb = clusterPowerStatus.HostsPower.Aggregate(new StringBuilder(), (builder, pair) =>
+                    {
+                        builder.Append($"{pair.Key}: {pair.Value.Status} | ");
+                        return builder;
+                    });
+
+                    if (sb != null) _logger.LogDebug(sb.ToString());
+
+                    // check if we can turn off (all hosts off)
+                    if (clusterPowerStatus.HostsPower.All(kvp => kvp.Value.Status == PowerStatus.Off))
+                        _raspbeeService.PowerOff();
+                }
+
                 LogReply(reply);
 
                 if (reply != null && reply.Status == IPStatus.Success)
@@ -74,7 +113,7 @@ public class CheckHostStatus : IRequest<bool>
                 // Let the main thread resume.  
                 ((AutoResetEvent) e.UserState).Set();
             };
-            
+
             var data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
             var buffer = Encoding.ASCII.GetBytes(data);
 
@@ -87,8 +126,8 @@ public class CheckHostStatus : IRequest<bool>
             // cannot be fragmented.  
             var options = new PingOptions(64, true);
 
-            _logger.LogDebug("Time to live: {Ttl}", options.Ttl);
-            _logger.LogDebug("Don't fragment: {DontFragment}", options.DontFragment);
+            // _logger.LogDebug("Time to live: {Ttl}", options.Ttl);
+            // _logger.LogDebug("Don't fragment: {DontFragment}", options.DontFragment);
 
             // Send the ping asynchronously.  
             // Use the waiter as the user token.  
@@ -100,9 +139,9 @@ public class CheckHostStatus : IRequest<bool>
             // when possible.  
             waiter.WaitOne();
 
-            _logger.LogDebug("WaitOne returned, {Hostname}", request?.Hostname);
+            // _logger.LogDebug("WaitOne returned, {Hostname}", request?.Hostname);
 
-            return Task.FromResult(true);
+            return true;
         }
 
         private void LogReply(PingReply reply)
@@ -111,14 +150,14 @@ public class CheckHostStatus : IRequest<bool>
                 return;
 
             _logger.LogDebug("ping status: {Status}", reply.Status);
-            if (reply.Status == IPStatus.Success)
-            {
-                _logger.LogDebug("Address: {Address}", reply.Address.ToString());
-                _logger.LogDebug("RoundTrip time: {RoundTripTime}", reply.RoundtripTime);
-                _logger.LogDebug("Time to live: {Ttl}", reply?.Options?.Ttl);
-                _logger.LogDebug("Don't fragment: {DontFragment}", reply?.Options?.DontFragment);
-                _logger.LogDebug("Buffer size: {BufferLength}", reply?.Buffer?.Length);
-            }
+            // if (reply.Status == IPStatus.Success)
+            // {
+            //     _logger.LogDebug("Address: {Address}", reply.Address.ToString());
+            //     _logger.LogDebug("RoundTrip time: {RoundTripTime}", reply.RoundtripTime);
+            //     _logger.LogDebug("Time to live: {Ttl}", reply?.Options?.Ttl);
+            //     _logger.LogDebug("Don't fragment: {DontFragment}", reply?.Options?.DontFragment);
+            //     _logger.LogDebug("Buffer size: {BufferLength}", reply?.Buffer?.Length);
+            // }
         }
     }
 }

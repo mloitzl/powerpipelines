@@ -31,19 +31,10 @@ public class PowerOn : IRequest<bool>
             var hostPowerStatus = _clusterTopologyConfiguration.Hosts.ToDictionary(host => host,
                 host => new HostPowerStatus {Hostname = host, Status = PowerStatus.Unknown});
 
-            try
-            {
-                var clusterPowerStatus = await _clusterPowerStatusRepository.EnsurePowerStatus(new ClusterPowerStatus
-                {
-                    PowerRequestId = request.RequestId,
-                    HostsPower = hostPowerStatus,
-                    Id = _clusterTopologyConfiguration.ClusterId
-                });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            foreach (var powerStatus in hostPowerStatus)
+                await _clusterPowerStatusRepository.EnsureHostPowerStatus(_clusterTopologyConfiguration.ClusterId,
+                    powerStatus.Key, powerStatus.Value);
+
             return _raspbeeService.PowerOn();
         }
     }

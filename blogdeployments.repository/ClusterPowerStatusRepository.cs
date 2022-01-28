@@ -1,6 +1,5 @@
 using AutoMapper;
 using blogdeployments.domain;
-using CouchDB.Driver.Extensions;
 
 namespace blogdeployments.repository;
 
@@ -24,65 +23,30 @@ public class ClusterPowerStatusRepository : IClusterPowerStatusRepository
         return existing != null ? _mapper.Map<ClusterPowerStatus>(existing) : null;
     }
 
-    public async Task<ClusterPowerStatus> GetPowerStatus()
+    public async Task<HostPowerStatus> EnsureHostPowerStatus(string clusterId, string hostname,
+        HostPowerStatus clusterPowerStatus)
     {
-        var listOfOne =
-            await _context
-                .ClusterPower
-                .Where(r => true)
-                .OrderByDescending(r => r.Id)
-                .Take(1)
-                .ToListAsync();
+        var existing = await _context.ClusterPower.FindAsync(clusterId);
 
-        return _mapper.Map<ClusterPowerStatus>(listOfOne.FirstOrDefault());
-    }
-
-    public async Task<ClusterPowerStatus> AddPowerStatus(ClusterPowerStatus clusterPowerStatus)
-    {
-        ClusterPowerStatusDocument document;
-        try
+        if (existing == null)
         {
-            document = await _context.ClusterPower.AddAsync(
-                _mapper.Map<ClusterPowerStatusDocument>(clusterPowerStatus)
-            );
-
-            return _mapper.Map<ClusterPowerStatus>(document);
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
-    }
-
-    // todo: there should only be one document about this
-    public async Task<ClusterPowerStatus> EnsurePowerStatus(ClusterPowerStatus clusterPowerStatus)
-    {
-        ClusterPowerStatus status;
-        try
-        {
-            var updated = _mapper.Map<ClusterPowerStatusDocument>(clusterPowerStatus);
-            
-            var existig = await _context.ClusterPower.FindAsync(clusterPowerStatus.Id);
-
-            if (existig != null)
+            var @new = new ClusterPowerStatus
             {
-                updated.Rev = existig.Rev;
-            }
-
-            var document = await _context.ClusterPower.AddOrUpdateAsync(
-                updated
-            );
-
-            return _mapper.Map<ClusterPowerStatus>(document);
+                // PowerRequestId = request.RequestId,
+                HostsPower = new Dictionary<string, HostPowerStatus>
+                {
+                    {hostname, clusterPowerStatus}
+                },
+                Id = clusterId
+            };
+            await _context.ClusterPower.AddOrUpdateAsync(_mapper.Map<ClusterPowerStatusDocument>(@new));
         }
-        catch (Exception ex)
+        else
         {
-            throw ex;
+            existing.HostsPower[hostname] = clusterPowerStatus;
+            await _context.ClusterPower.AddOrUpdateAsync(existing);
         }
-    }
 
-    public Task<ClusterPowerStatus> UpdatePowerStatus(ClusterPowerStatus clusterPowerStatus)
-    {
-        throw new NotImplementedException();
+        return clusterPowerStatus;
     }
 }
