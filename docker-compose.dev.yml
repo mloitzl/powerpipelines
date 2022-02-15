@@ -6,7 +6,7 @@ services:
     ports:
       - "5984:5984"
     volumes:
-      - ~/.secrets/couchdb/local.ini:/opt/couchdb/etc/local.ini
+      - $HOME/.secrets/couchdb/local.ini:/opt/couchdb/etc/local.ini
 
   rabbitmq:
     image: rabbitmq:3.8.8-management
