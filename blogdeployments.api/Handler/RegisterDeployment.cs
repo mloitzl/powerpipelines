@@ -7,6 +7,7 @@ namespace blogdeployments.api.Handler;
 
 public class RegisterDeployment : IRequest<Deployment>
 {
+    public string? Id { get; set; }
     public string? Hash { get; set; }
     public string? FriendlyName { get; set; }
 
@@ -30,9 +31,11 @@ public class RegisterDeployment : IRequest<Deployment>
         {
             var deployment = _mapper.Map<Deployment>(registerDeployment);
 
+            var deploymentId = Guid.NewGuid();
+            
             await _sender.Send(new PowerOnRequested
             {
-                RequestId = Guid.NewGuid()
+                RequestId = deploymentId
             });
 
             return await _mediator.Send(_mapper.Map<CreateDeployment>(deployment));

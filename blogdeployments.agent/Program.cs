@@ -2,7 +2,6 @@ using System.Reflection;
 using blogdeployments.agent;
 using blogdeployments.agent.BackgroundService;
 using blogdeployments.agent.Handler;
-using blogdeployments.agent.Sender;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
 using blogdeployments.events;

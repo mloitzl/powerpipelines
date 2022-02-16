@@ -1,8 +1,8 @@
 using System.Reflection;
 using blogdeployments.api;
-using blogdeployments.api.Sender;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
+using blogdeployments.events.EventSender;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;
 using MediatR;

@@ -10,19 +10,22 @@ namespace blogdeployments.azurereceiver.BackgroundService;
 
 public class AzureQueueReceiver : Microsoft.Extensions.Hosting.BackgroundService
 {
-    private readonly IEventSender<PowerOnRequested> _sender;
+    private readonly IEventSender<PowerOnRequested> _powerOnRequestedSender;
+    private readonly IEventSender<ShutdownRequested> _shutdownRequestedSender;
     private readonly ILogger<AzureQueueReceiver> _logger;
-    private readonly AzureQueue _settings;
+    private readonly AzureQueueSettings _settings;
     private ServiceBusClient _client;
     private ServiceBusProcessor _processor;
     private JsonSerializerOptions _options;
 
     public AzureQueueReceiver(
-        IEventSender<PowerOnRequested> sender,
-        IOptions<AzureQueue> options,
+        IEventSender<PowerOnRequested> powerOnRequestedPowerOnRequestedSender,
+        IEventSender<ShutdownRequested> shutdownRequestedSender,
+        IOptions<AzureQueueSettings> options,
         ILogger<AzureQueueReceiver> logger)
     {
-        _sender = sender;
+        _powerOnRequestedSender = powerOnRequestedPowerOnRequestedSender;
+        _shutdownRequestedSender = shutdownRequestedSender;
         _logger = logger;
         _settings = options.Value;
     }
@@ -70,27 +73,34 @@ public class AzureQueueReceiver : Microsoft.Extensions.Hosting.BackgroundService
         try
         {
             var pipelineRequest = JsonSerializer.Deserialize<PipelineViewModel>(cleanedJsonString, _options);
-            _logger.LogDebug($"{pipelineRequest}");
+            _logger.LogDebug($"[⛈] -> {pipelineRequest.Action}");
 
             switch (pipelineRequest.Action)
             {
                 case ActionType.Start:
+                    var deploymentId = Guid.NewGuid();
+                    
                     var deployment = new Deployment
                     {
                         FriendlyName = pipelineRequest.SourceVersionMessage,
-                        Id = pipelineRequest.CommitId,
-                        Hash = pipelineRequest.SourceBranch
+                        Id = deploymentId.ToString(),
+                        Hash = pipelineRequest.CommitId
                     };
-                    await _sender.Send(new PowerOnRequested
+                    
+                    _logger.LogDebug($"-> [🐰] PowerOnRequested ({deploymentId})");
+                    await _powerOnRequestedSender.Send(new PowerOnRequested
                     {
-                        RequestId = Guid.NewGuid()
+                        RequestId = deploymentId
                     });
                     break;
+                case ActionType.Complete:
+                    await _shutdownRequestedSender.Send(new ShutdownRequested());
+                    break;
+                case ActionType.Unknown:
                 default:
                     break;
-                    
             }
-           
+
             await arg.CompleteMessageAsync(arg.Message);
         }
         catch (Exception ex)

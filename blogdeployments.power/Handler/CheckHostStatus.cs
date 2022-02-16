@@ -19,20 +19,23 @@ public class CheckHostStatus : IRequest<bool>
     public class CheckHostStatusHandler : IRequestHandler<CheckHostStatus, bool>
     {
         private readonly IClusterPowerStatusRepository _clusterPowerStatusRepository;
-        private readonly IOptions<ClusterTopologyConfiguration> _configuration;
+        private readonly ClusterTopologyConfiguration _clusterConfiguration;
         private readonly IEventSender<ShutdownInitiated> _eventSender;
+        private readonly ApplicationConfiguration _applicationConfiguration;
         private readonly ILogger<CheckHostStatusHandler> _logger;
         private readonly IRaspbeeService _raspbeeService;
 
         public CheckHostStatusHandler(
             IEventSender<ShutdownInitiated> eventSender,
-            IOptions<ClusterTopologyConfiguration> configuration,
+            IOptions<ClusterTopologyConfiguration> clusterConfiguration,
+            IOptions<ApplicationConfiguration> applicationConfiguration,
             IClusterPowerStatusRepository clusterPowerStatusRepository,
             IRaspbeeService raspbeeService,
             ILogger<CheckHostStatusHandler> logger)
         {
             _eventSender = eventSender;
-            _configuration = configuration;
+            _applicationConfiguration = applicationConfiguration.Value;
+            _clusterConfiguration = clusterConfiguration.Value;
             _clusterPowerStatusRepository = clusterPowerStatusRepository;
             _raspbeeService = raspbeeService;
             _logger = logger;
@@ -44,7 +47,7 @@ public class CheckHostStatus : IRequest<bool>
             _logger.LogDebug("{Hostname} {CheckingSince} s", request?.Hostname,
                 DateTime.Now.Subtract(request.InitiatedTime).TotalSeconds);
 
-            var who = request.Hostname;
+            var requestHostname = request.Hostname;
             var pingSender = new Ping();
             var waiter = new AutoResetEvent(false);
 
@@ -74,28 +77,7 @@ public class CheckHostStatus : IRequest<bool>
 
                 if (reply != null && reply.Status == IPStatus.TimedOut)
                 {
-                    // set host status to off
-                    await _clusterPowerStatusRepository.EnsureHostPowerStatus(_configuration.Value.ClusterId,
-                        request.Hostname, new HostPowerStatus
-                        {
-                            Hostname = request.Hostname,
-                            Status = PowerStatus.Off
-                        });
-
-                    var clusterPowerStatus =
-                        await _clusterPowerStatusRepository.GetPowerStatus(_configuration.Value.ClusterId);
-
-                    var sb = clusterPowerStatus.HostsPower.Aggregate(new StringBuilder(), (builder, pair) =>
-                    {
-                        builder.Append($"{pair.Key}: {pair.Value.Status} | ");
-                        return builder;
-                    });
-
-                    if (sb != null) _logger.LogDebug(sb.ToString());
-
-                    // check if we can turn off (all hosts off)
-                    if (clusterPowerStatus.HostsPower.All(kvp => kvp.Value.Status == PowerStatus.Off))
-                        _raspbeeService.PowerOff();
+                    await ConcludePowerOff(requestHostname);
                 }
 
                 LogReply(reply);
@@ -103,9 +85,10 @@ public class CheckHostStatus : IRequest<bool>
                 if (reply != null && reply.Status == IPStatus.Success)
                 {
                     Thread.Sleep(1000);
-                    _eventSender.Send(new ShutdownInitiated
+
+                    await _eventSender.Send(new ShutdownInitiated
                     {
-                        Hostname = who,
+                        Hostname = requestHostname,
                         InitiatedTime = request.InitiatedTime
                     });
                 }
@@ -132,7 +115,7 @@ public class CheckHostStatus : IRequest<bool>
             // Send the ping asynchronously.  
             // Use the waiter as the user token.  
             // When the callback completes, it can wake up this thread.  
-            pingSender.SendAsync(who, timeout, buffer, options, waiter);
+            pingSender.SendAsync(requestHostname, timeout, buffer, options, waiter);
 
             // Prevent this example application from ending. 
             // A real application should do something useful  
@@ -142,6 +125,32 @@ public class CheckHostStatus : IRequest<bool>
             // _logger.LogDebug("WaitOne returned, {Hostname}", request?.Hostname);
 
             return true;
+        }
+
+        private async Task ConcludePowerOff(string requestHostname)
+        {
+            // set host status to off
+            await _clusterPowerStatusRepository.EnsureHostPowerStatus(_clusterConfiguration.ClusterId,
+                requestHostname, new HostPowerStatus
+                {
+                    Hostname = requestHostname,
+                    Status = PowerStatus.Off
+                });
+
+            var clusterPowerStatus =
+                await _clusterPowerStatusRepository.GetPowerStatus(_clusterConfiguration.ClusterId);
+
+            var sb = clusterPowerStatus.HostsPower.Aggregate(new StringBuilder(), (builder, pair) =>
+            {
+                builder.Append((string?) $"{pair.Key}: {pair.Value.Status} | ");
+                return builder;
+            });
+
+            if (sb != null) _logger.LogDebug(sb.ToString());
+
+            // check if we can turn off (all hosts off)
+            if (clusterPowerStatus.HostsPower.All(kvp => kvp.Value.Status == PowerStatus.Off))
+                _raspbeeService.PowerOff();
         }
 
         private void LogReply(PingReply reply)

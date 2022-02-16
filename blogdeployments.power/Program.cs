@@ -25,6 +25,7 @@ builder.Services.AddCouchContext<DeploymentsContext>(optionBuilder => optionBuil
 
 builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.Configure<RaspbeeConfiguration>(builder.Configuration.GetSection("Raspbee"));
+builder.Services.Configure<ApplicationConfiguration>(builder.Configuration.GetSection("ApplicationConfiguration"));
 builder.Services.Configure<ClusterTopologyConfiguration>(builder.Configuration.GetSection("ClusterTopology"));
 
 builder.Services.AddHostedService<QueueListener<PowerOnRequested, PowerOn>>();

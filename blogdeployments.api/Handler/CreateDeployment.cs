@@ -7,6 +7,7 @@ namespace blogdeployments.api.Handler;
 
 public class CreateDeployment : IRequest<Deployment>
 {
+    public string? Id { get; set; }
     public string? Hash { get; set; }
     public string? FriendlyName { get; set; }
 

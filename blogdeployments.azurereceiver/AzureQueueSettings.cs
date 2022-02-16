@@ -1,6 +1,6 @@
 ﻿namespace blogdeployments.azurereceiver;
 
-public class AzureQueue
+public class AzureQueueSettings
 {
     public string ConnectionString { get; set; }
 }

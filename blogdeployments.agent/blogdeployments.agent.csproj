@@ -7,15 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1"/>
-        <PackageReference Include="MediatR" Version="9.0.0"/>
-        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+        <PackageReference Include="MediatR" Version="9.0.0" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\blogdeployments.domain\blogdeployments.domain.csproj"/>
-        <ProjectReference Include="..\blogdeployments.events\blogdeployments.events.csproj"/>
+        <ProjectReference Include="..\blogdeployments.domain\blogdeployments.domain.csproj" />
+        <ProjectReference Include="..\blogdeployments.events\blogdeployments.events.csproj" />
     </ItemGroup>
 
 </Project>
