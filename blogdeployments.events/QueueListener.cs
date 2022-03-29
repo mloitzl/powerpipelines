@@ -14,13 +14,13 @@ namespace blogdeployments.events;
 public class QueueListener<TEvent, TCommand> : BackgroundService
     where TEvent : IEvent
 {
-    private readonly IModel _channel;
+    private IModel _channel;
 
-    private readonly IConnection _connection;
+    private IConnection _connection;
     private readonly ILogger<QueueListener<TEvent, TCommand>> _logger;
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
-    private readonly string _queueName;
+    private string _queueName;
     private readonly IOptions<RabbitMqConfiguration> _rabbitMqOptions;
 
     public QueueListener(
@@ -33,29 +33,16 @@ public class QueueListener<TEvent, TCommand> : BackgroundService
         _mapper = mapper;
         _rabbitMqOptions = rabbitMqOptions;
         _logger = logger;
-
-        var factory = new ConnectionFactory
-        {
-            HostName = _rabbitMqOptions.Value.Hostname
-        };
-
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
-        _channel.ExchangeDeclare("deployments_exchange", "direct");
-        _queueName = _channel.QueueDeclare().QueueName;
-
-        // todo: the only difference is the routingkey, it seems that 
-        // - this can all get to a templated baseclass
-        // - and/or receive different Pocos in the Send() call
-        _channel.QueueBind(_queueName,
-            "deployments_exchange",
-            typeof(TEvent).FullName);
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
+        
+        // Waiting for RabbitMQ to come up.
 
+        await WaitForMessageQueueAsync(stoppingToken);
+        
         var consumer = new EventingBasicConsumer(_channel);
         consumer.Received += (model, ea) =>
         {
@@ -67,10 +54,47 @@ public class QueueListener<TEvent, TCommand> : BackgroundService
             HandleMessage(JsonSerializer.Deserialize<TEvent>(message));
         };
         _channel.BasicConsume(_queueName, true, consumer);
-
-        return Task.CompletedTask;
     }
 
+    private async Task WaitForMessageQueueAsync(CancellationToken stoppingToken)
+    {
+        stoppingToken.ThrowIfCancellationRequested();
+        
+        while (!CreateConnection())
+        {
+            await Task.Delay(1000);
+        }
+    }
+
+    private bool CreateConnection()
+    {
+        try
+        {
+            var factory = new ConnectionFactory
+            {
+                HostName = _rabbitMqOptions.Value.Hostname
+            };
+       
+            _connection = factory.CreateConnection();
+            _channel = _connection.CreateModel();
+            _channel.ExchangeDeclare("deployments_exchange", "direct");
+            _queueName = _channel.QueueDeclare().QueueName;
+
+            // todo: the only difference is the routingkey, it seems that 
+            // - this can all get to a templated baseclass
+            // - and/or receive different Pocos in the Send() call
+            _channel.QueueBind(_queueName,
+                "deployments_exchange",
+                typeof(TEvent).FullName);
+            return true;
+        }
+        catch (RabbitMQ.Client.Exceptions.BrokerUnreachableException e)
+        {
+            _logger.LogError(e, e.Message);
+            return false;
+        }
+    }
+    
     private void HandleMessage(TEvent? message)
     {
         // note: return value swallowed

@@ -60,7 +60,7 @@ public class CheckHostStatus : IRequest<bool>
                     // Let the main thread resume.
                     // UserToken is the AutoResetEvent object that the main thread
                     // is waiting for.  
-                    ((AutoResetEvent) e.UserState).Set();
+                    ((AutoResetEvent)e.UserState).Set();
                 }
 
                 // If an error occurred, display the exception to the user.  
@@ -69,8 +69,13 @@ public class CheckHostStatus : IRequest<bool>
                     _logger.LogDebug("Ping failed:");
                     _logger.LogDebug(e.Error.ToString());
 
+                    // e.g. hostname does not resolve (container), assume its down
+                    await ConcludePowerOff(requestHostname);
+
                     // Let the main thread resume.
-                    ((AutoResetEvent) e.UserState).Set();
+                    ((AutoResetEvent)e.UserState).Set();
+
+                    return;
                 }
 
                 var reply = e.Reply;
@@ -94,7 +99,7 @@ public class CheckHostStatus : IRequest<bool>
                 }
 
                 // Let the main thread resume.  
-                ((AutoResetEvent) e.UserState).Set();
+                ((AutoResetEvent)e.UserState).Set();
             };
 
             var data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
@@ -116,7 +121,7 @@ public class CheckHostStatus : IRequest<bool>
             // Use the waiter as the user token.  
             // When the callback completes, it can wake up this thread.  
             pingSender.SendAsync(requestHostname, timeout, buffer, options, waiter);
-
+            
             // Prevent this example application from ending. 
             // A real application should do something useful  
             // when possible.  
@@ -142,7 +147,7 @@ public class CheckHostStatus : IRequest<bool>
 
             var sb = clusterPowerStatus.HostsPower.Aggregate(new StringBuilder(), (builder, pair) =>
             {
-                builder.Append((string?) $"{pair.Key}: {pair.Value.Status} | ");
+                builder.Append((string?)$"{pair.Key}: {pair.Value.Status} | ");
                 return builder;
             });
 

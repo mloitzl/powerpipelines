@@ -12,6 +12,8 @@ using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Console.WriteLine(builder.Configuration.GetDebugView());
+
 var couchDbHost =
     $"{builder.Configuration["couchdb:proto"]}://{builder.Configuration["couchdb:host"]}:{builder.Configuration["couchdb:port"]}";
 

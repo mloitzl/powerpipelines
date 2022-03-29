@@ -10,6 +10,8 @@ using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Console.WriteLine(builder.Configuration.GetDebugView());
+
 // Add services to the container.
 
 builder.Services.AddControllers();

@@ -31,6 +31,8 @@ public class Shutdown : IRequest<bool>
         {
             var hostName = Dns.GetHostName();
 
+            _logger.LogDebug("ShutdownHandler.Handle '{HostName}'", hostName);
+
             var @event = new ShutdownInitiated
             {
                 Hostname = hostName,
@@ -39,7 +41,19 @@ public class Shutdown : IRequest<bool>
 
             await _sender.Send(@event);
 
-            if (_options.Value.DryRun) return true;
+            if (_options.Value.RunningInContainer)
+            {
+                _logger.LogDebug("Running in a Container. Killing container by exiting with code 1");
+                Environment.Exit(1);
+                return true;
+            }
+
+            if (_options.Value.DryRun)
+            {
+                _logger.LogDebug("Dryrun. Not shutting down myself.");
+                return true;
+            }
+
 
             _logger.LogDebug("Trying to send shutdown native call...");
 
