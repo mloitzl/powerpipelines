@@ -12,6 +12,8 @@ using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddApplicationInsightsTelemetry();
+
 Console.WriteLine(builder.Configuration.GetDebugView());
 
 var couchDbHost =

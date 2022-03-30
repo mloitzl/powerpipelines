@@ -11,6 +11,7 @@
         <PackageReference Include="CouchDB.NET.DependencyInjection" Version="3.1.1" />
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
         <PackageReference Include="Microsoft.Identity.Web" Version="1.20.0" />
         <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />

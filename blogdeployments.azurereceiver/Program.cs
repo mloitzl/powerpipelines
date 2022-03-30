@@ -5,10 +5,12 @@ using blogdeployments.domain.Events;
 using blogdeployments.events.EventSender;
 
 var builder = WebApplication.CreateBuilder(args);
+Console.WriteLine(builder.Configuration.GetDebugView());
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddApplicationInsightsTelemetry();
 
 builder.Services.Configure<AzureQueueSettings>(builder.Configuration.GetSection("azurequeue"));
 
