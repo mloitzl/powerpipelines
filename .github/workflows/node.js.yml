@@ -26,5 +26,10 @@ jobs:
         name: Azure Login
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: |
-          az functionapp list --query "[?state=='Running']"
+#      - run: |
+#          az functionapp list --query "[?state=='Running']"
+      - uses: kheiakiyama/install-azcopy-action@v1
+        with:
+          version: 'v10'
+      - run: azcopy_v10 --source . --destination "https://powerpipelines.blob.core.windows.net/$web" --recursive --set-content-type
+        working-directory: blogdeployments.power.ui/build
