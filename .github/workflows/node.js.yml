@@ -26,7 +26,7 @@ jobs:
         name: Azure Login
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: az storage blob upload-batch --account-name powerpipelines -s . -d "\$web"
+      - run: az storage blob upload-batch --account-name powerpipelines --overwrite -s . -d "\$web"
         working-directory: blogdeployments.power.ui/build
 #      - run: |
 #          az functionapp list --query "[?state=='Running']"
