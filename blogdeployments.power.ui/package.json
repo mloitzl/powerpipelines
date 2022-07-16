@@ -14,8 +14,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "cross-env REACT_APP_POWER_ENDPOINT=\"https://powermanagement.azure-api.net/blogdeployments-azureservicebus-proxy/Power\" react-scripts start",
-    "build": "cross-env REACT_APP_POWER_ENDPOINT=\"https://powermanagement.azure-api.net/blogdeployments-azureservicebus-proxy/Power\" react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
