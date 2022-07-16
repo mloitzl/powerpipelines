@@ -16,6 +16,7 @@ jobs:
 
     - name: Install
       run: npm ci
+      working-directory: blogdeployments.power.ui
 
     - name: Azure Login
       uses: azure/login@v1
