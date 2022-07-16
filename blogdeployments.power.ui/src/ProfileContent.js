@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "./authConfig";
 import { ProfileData } from "./ProfileData";
-import { callMsGraph, getRebel } from "./graph";
+import { callMsGraph } from "./graph";
 
 export function ProfileContent() {
-    const { instance, accounts, inProgress } = useMsal();
+    const { instance, accounts } = useMsal();
     const [graphData, setGraphData] = useState(null);
 
     const name = accounts[0] && accounts[0].name;

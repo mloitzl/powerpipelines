@@ -5,10 +5,8 @@ import { RebelData } from "./RebelData";
 import { getRebel } from "./graph";
 
 export function RebelContent() {
-    const { instance, accounts, inProgress } = useMsal();
+    const { instance, accounts } = useMsal();
     const [rebelData, setRebelData] = useState(null);
-
-    const name = accounts[0] && accounts[0].name;
 
     function RequestRebelData(action) {
 
