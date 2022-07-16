@@ -22,15 +22,17 @@ jobs:
 #      - run: npm test
 #        working-directory: blogdeployments.power.ui
       
-#      - uses: azure/login@v1
-#        name: Azure Login
-#        with:
-#          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/login@v1
+        name: Azure Login
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - run: az storage blob upload-batch --account-name powerpipelines -s . -d $web
+        working-directory: blogdeployments.power.ui/build
 #      - run: |
 #          az functionapp list --query "[?state=='Running']"
-      - uses: kheiakiyama/install-azcopy-action@v1
-        with:
-          version: 'v10'
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: azcopy_v10 copy . "https://powerpipelines.blob.core.windows.net/$web/" --recursive=true
-        working-directory: blogdeployments.power.ui/build
+#      - uses: kheiakiyama/install-azcopy-action@v1
+#        with:
+#          version: 'v10'
+#          creds: ${{ secrets.AZURE_CREDENTIALS }}
+#      - run: azcopy_v10 copy . "https://powerpipelines.blob.core.windows.net/$web/" --recursive=true
+#        working-directory: blogdeployments.power.ui/build
