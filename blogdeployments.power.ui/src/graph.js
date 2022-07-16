@@ -19,20 +19,26 @@ export async function callMsGraph(accessToken) {
         .catch(error => console.log(error));
 }
 
-export async function getRebel(accessToken, id) {
+export async function getRebel(action, accessToken, id) {
     const headers = new Headers();
     const bearer = `Bearer ${accessToken}`;
 
     headers.append("Authorization", bearer);
+    headers.append('Content-Type', 'application/json');
 
     const options = {
-        method: "GET",
-        headers: headers
+        method: "POST",
+        headers: headers,
+        mode: "cors"
     };
 
-    const endpointUrl = "https://localhost:7099/Rebels/get";
+    const endpointUrl = `${process.env.REACT_APP_POWER_ENDPOINT}${action}`;
 
-    return fetch(`${endpointUrl}?id=${id}`, options)
-        .then(response => response.json())
-        .catch(error => console.log(error));
+    return fetch(`${endpointUrl}`, options)
+        .then(response => {
+            return response.json();
+        })
+        .catch(error => {
+            console.log(error);
+        });
 }
