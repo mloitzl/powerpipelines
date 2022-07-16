@@ -34,5 +34,5 @@ jobs:
 #        with:
 #          version: 'v10'
 #          creds: ${{ secrets.AZURE_CREDENTIALS }}
-#      - run: azcopy_v10 copy . "https://powerpipelines.blob.core.windows.net/$web/" --recursive=true
+#      - run: azcopy_v10 copy . "https://powerpipelines.blob.core.windows.net/\$web/" --recursive=true
 #        working-directory: blogdeployments.power.ui/build
