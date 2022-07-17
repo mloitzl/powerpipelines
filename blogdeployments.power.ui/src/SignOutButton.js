@@ -1,5 +1,11 @@
 import React from "react";
 import { useMsal } from "@azure/msal-react";
+import { provideFluentDesignSystem, fluentButton } from '@fluentui/web-components';
+import { provideReactWrapper } from '@microsoft/fast-react-wrapper';
+
+const { wrap } = provideReactWrapper(React, provideFluentDesignSystem());
+
+export const FluentButton = wrap(fluentButton());
 
 function handleLogout(instance) {
     instance.logoutRedirect().catch(e => {
@@ -11,6 +17,6 @@ export const SignOutButton = () => {
     const { instance } = useMsal();
 
     return (
-        <button variant="secondary" className="ml-auto" onClick={() => handleLogout(instance)}>Sign out</button>
+        <FluentButton appearance="accent" onClick={() => handleLogout(instance)}>Sign out</FluentButton>
     );
 }

@@ -4,6 +4,14 @@ import { powerApiTokenRequest } from "./authConfig";
 import { RebelData } from "./RebelData";
 import { getRebel } from "./graph";
 
+import { provideFluentDesignSystem, fluentButton } from '@fluentui/web-components';
+import { provideReactWrapper } from '@microsoft/fast-react-wrapper';
+
+const { wrap } = provideReactWrapper(React, provideFluentDesignSystem());
+
+export const FluentButton = wrap(fluentButton());
+
+
 export function RebelContent() {
     const { instance, accounts } = useMsal();
     const [rebelData, setRebelData] = useState(null);
@@ -41,8 +49,8 @@ export function RebelContent() {
         <>
             <div>
                 { rebelData && <RebelData graphData={rebelData} /> }
-                <button variant="secondary" onClick={() => RequestRebelData("On")}>Power On</button>
-                <button variant="secondary" onClick={() => RequestRebelData("Off")}>Power Off</button>
+                <FluentButton variant="secondary" onClick={() => RequestRebelData("On")}>Power On</FluentButton>
+                <FluentButton variant="secondary" onClick={() => RequestRebelData("Off")}>Power Off</FluentButton>
             </div>
         </>
     );

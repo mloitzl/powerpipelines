@@ -4,6 +4,13 @@ import { loginRequest } from "./authConfig";
 import { ProfileData } from "./ProfileData";
 import { callMsGraph } from "./graph";
 
+import { provideFluentDesignSystem, fluentButton } from '@fluentui/web-components';
+import { provideReactWrapper } from '@microsoft/fast-react-wrapper';
+
+const { wrap } = provideReactWrapper(React, provideFluentDesignSystem());
+
+export const FluentButton = wrap(fluentButton());
+
 export function ProfileContent() {
     const { instance, accounts } = useMsal();
     const [graphData, setGraphData] = useState(null);
@@ -33,7 +40,7 @@ export function ProfileContent() {
             {graphData ?
                 <ProfileData graphData={graphData} />
                 :
-                <button variant="secondary" onClick={RequestProfileData}>Request Profile Information</button>
+                <FluentButton variant="secondary" onClick={RequestProfileData}>Request Profile Information</FluentButton>
             }
         </>
     );
