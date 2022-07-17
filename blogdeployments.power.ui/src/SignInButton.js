@@ -3,7 +3,7 @@ import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "./authConfig";
 
 function handleLogin(instance) {
-    instance.loginPopup(loginRequest).catch(e => {
+    instance.loginRedirect(loginRequest).catch(e => {
         console.error(e);
     });
 }
@@ -12,6 +12,6 @@ export const SignInButton = () => {
     const { instance } = useMsal();
 
     return (
-        <button variant="secondary" className="ml-auto" onClick={() => handleLogin(instance)}>Sign in using Popup</button>
+        <button variant="secondary" className="ml-auto" onClick={() => handleLogin(instance)}>Sign in</button>
     );
 }
