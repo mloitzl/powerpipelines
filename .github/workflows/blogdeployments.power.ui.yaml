@@ -1,4 +1,8 @@
-on: [push]
+on: 
+  push:
+    paths:
+    -  'blogdeployments.power.ui'
+    - '.github/workflows/blogdeployments.power.ui.yaml'
 
 name: DeployFrontend
 
