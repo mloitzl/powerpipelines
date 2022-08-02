@@ -8,16 +8,27 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FUNCTION_APP_PATH: 'blogdeployments.azureservicebus.proxy'
+      FUNCTION_APP_NAME: 'blogdeployments-azureservicebus-proxy'
+
     steps:
       - uses: actions/setup-dotnet@v2
       - uses: actions/checkout@v3
-        name: Setup DotNet '6.0.x'
+        name: Build Function App
 #        with:
 #          dotnet-version: '6.0.x'
       - run: |
           pushd './${{ env.FUNCTION_APP_PATH }}'
           dotnet build --configuration Release --output ./output
           popd
+
+      - uses: actions/functions-action@v1
+        name: Deploy Function App
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: '${{ env.FUNCTION_APP_PATH }}/output'
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+        
+        
       
       
       
