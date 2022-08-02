@@ -21,7 +21,7 @@ jobs:
           dotnet build --configuration Release --output ./output
           popd
 
-      - uses: actions/functions-action@v1
+      - uses: Azure/functions-action@v1
         name: Deploy Function App
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
