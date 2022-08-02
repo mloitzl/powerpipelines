@@ -1,0 +1,23 @@
+﻿on: [push]
+
+name: DeployServiceBusProxy
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      FUNCTION_APP_PATH: 'blogdeployments.azureservicebus.proxy'
+    steps:
+      - uses: actions/setup-dotnet@v2
+      - uses: actions/checkout@v3
+        name: Setup DotNet '6.0.x'
+#        with:
+#          dotnet-version: '6.0.x'
+      - run: |
+          pushd './${{ env.FUNCTION_APP_PATH }}'
+          dotnet build --configuration Release --output ./output
+          popd
+      
+      
+      
