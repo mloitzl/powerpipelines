@@ -7,6 +7,7 @@ using blogdeployments.domain.Events;
 using blogdeployments.events;
 using blogdeployments.events.EventSender;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,11 @@ builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<AgentConfiguration>(builder.Configuration.GetSection("Agent"));
+var agentConfiguration = new AgentConfiguration();
+builder.Configuration.GetSection("Agent").Bind(agentConfiguration);
+agentConfiguration.RunningInContainer = builder.Configuration.GetValue<bool>("RUNNING_IN_CONTAINER");
+builder.Services.AddSingleton(Options.Create(agentConfiguration));
+
 builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddTransient<IEventSender<PowerOnCompleted>, PowerOnCompletedEventSender>();
 builder.Services.AddTransient<IEventSender<ShutdownInitiated>, ShutdownInitiatedEventSender>();
