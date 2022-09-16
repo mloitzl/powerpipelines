@@ -17,6 +17,8 @@ public class PipelineViewModel
 public enum ActionType
 {
     Unknown,
-    Start,
-    Complete,
+    Start, // todo: StartPipelineRun
+    Complete, // todo: CompletePipelineRun
+    PowerOn,
+    PowerOff
 }

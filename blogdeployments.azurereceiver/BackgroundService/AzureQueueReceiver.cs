@@ -1,9 +1,12 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using AutoMapper;
 using Azure.Messaging.ServiceBus;
 using blogdeployments.azurereceiver.Model;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
+using blogdeployments.handler;
+using MediatR;
 using Microsoft.Extensions.Options;
 
 namespace blogdeployments.azurereceiver.BackgroundService;
@@ -12,6 +15,8 @@ public class AzureQueueReceiver : Microsoft.Extensions.Hosting.BackgroundService
 {
     private readonly IEventSender<PowerOnRequested> _powerOnRequestedSender;
     private readonly IEventSender<ShutdownRequested> _shutdownRequestedSender;
+    private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
     private readonly ILogger<AzureQueueReceiver> _logger;
     private readonly AzureQueueSettings _settings;
     private ServiceBusClient _client;
@@ -22,10 +27,14 @@ public class AzureQueueReceiver : Microsoft.Extensions.Hosting.BackgroundService
         IEventSender<PowerOnRequested> powerOnRequestedPowerOnRequestedSender,
         IEventSender<ShutdownRequested> shutdownRequestedSender,
         IOptions<AzureQueueSettings> options,
+        IMediator mediator,
+        IMapper mapper,
         ILogger<AzureQueueReceiver> logger)
     {
         _powerOnRequestedSender = powerOnRequestedPowerOnRequestedSender;
         _shutdownRequestedSender = shutdownRequestedSender;
+        _mediator = mediator;
+        _mapper = mapper;
         _logger = logger;
         _settings = options.Value;
     }
@@ -75,25 +84,34 @@ public class AzureQueueReceiver : Microsoft.Extensions.Hosting.BackgroundService
             var pipelineRequest = JsonSerializer.Deserialize<PipelineViewModel>(cleanedJsonString, _options);
             _logger.LogDebug($"[⛈] -> {pipelineRequest.Action}");
 
+
+            Guid deploymentId = Guid.NewGuid();
             switch (pipelineRequest.Action)
             {
-                case ActionType.Start:
-                    var deploymentId = Guid.NewGuid();
-                    
+                case ActionType.Start: // creates a pipeline run, powers on
                     var deployment = new Deployment
                     {
                         FriendlyName = pipelineRequest.SourceVersionMessage,
                         Id = deploymentId.ToString(),
                         Hash = pipelineRequest.CommitId
                     };
-                    
+
+                    await _mediator.Send(_mapper.Map<CreateDeployment>(deployment));
+
                     _logger.LogDebug($"-> [🐰] PowerOnRequested ({deploymentId})");
                     await _powerOnRequestedSender.Send(new PowerOnRequested
                     {
                         RequestId = deploymentId
                     });
                     break;
-                case ActionType.Complete:
+                case ActionType.PowerOn: // just power on
+                    await _powerOnRequestedSender.Send(new PowerOnRequested
+                    {
+                        RequestId = deploymentId
+                    });
+                    break;
+                case ActionType.Complete: // todo: complete the pipeline run, shutdown
+                case ActionType.PowerOff: // just shutdown
                     await _shutdownRequestedSender.Send(new ShutdownRequested());
                     break;
                 case ActionType.Unknown:

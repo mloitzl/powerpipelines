@@ -8,7 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.6.0" />
+    <PackageReference Include="CouchDB.NET.DependencyInjection" Version="3.1.1" />
+    <PackageReference Include="MediatR" Version="10.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
@@ -16,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\blogdeployments.domain\blogdeployments.domain.csproj" />
     <ProjectReference Include="..\blogdeployments.events\blogdeployments.events.csproj" />
+    <ProjectReference Include="..\blogdeployments.handler\blogdeployments.handler.csproj" />
   </ItemGroup>
 
 </Project>
