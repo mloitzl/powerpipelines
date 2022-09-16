@@ -1,6 +1,7 @@
 using AutoMapper;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
+using blogdeployments.handler;
 using MediatR;
 
 namespace blogdeployments.api.Handler;
