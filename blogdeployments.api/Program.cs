@@ -3,6 +3,7 @@ using blogdeployments.api;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
 using blogdeployments.events.EventSender;
+using blogdeployments.handler;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;
 using MediatR;
@@ -28,7 +29,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy(sharePointUri,
         builder =>
         {
-            builder.WithOrigins("https://*.sharepoint.com", "https://localhost:7099")
+            builder.WithOrigins(
+                    "https://*.sharepoint.com", 
+                    "https://localhost:7099", 
+                    "http://localhost:3000", 
+                    "https://*.web.core.windows.net/")
                 .SetIsOriginAllowedToAllowWildcardSubdomains()
                 .AllowCredentials()
                 .AllowAnyHeader()
@@ -108,10 +113,14 @@ builder.Services.AddSwaggerGen(options =>
     }
 );
 
-builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+builder.Services.AddMediatR(
+    Assembly.GetExecutingAssembly(), 
+    typeof(CreateDeployment).Assembly);
+
 builder.Services.AddAutoMapper(
     Assembly.GetExecutingAssembly(),
-    typeof(IDeploymentsRepository).Assembly);
+    typeof(IDeploymentsRepository).Assembly, 
+    typeof(CreateDeployment.CreateDeploymentHandler).Assembly);
 
 builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddTransient<IEventSender<PowerOnRequested>, PowerOnRequestedEventSender>();

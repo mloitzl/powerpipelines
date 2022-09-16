@@ -2,6 +2,7 @@ using AutoMapper;
 using blogdeployments.api.Handler;
 using blogdeployments.api.Model;
 using blogdeployments.domain;
+using blogdeployments.handler;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,5 +42,15 @@ public class DeploymentsController : ControllerBase
     {
         _logger.LogInformation("Completing...");
         return _mediator.Send(_mapper.Map<CompleteDeployment>(model));
+    }
+
+    [HttpGet("get", Name = "GetDeployments")]
+    [SwaggerOperation("get")]
+    [ProducesResponseType(typeof(IEnumerable<Deployment>), 200)]
+    public Task<IEnumerable<Deployment>> GetDeployments(GetDeploymentsViewModel model)
+    {
+        _logger.LogInformation("Getting deployments...");
+
+        return _mediator.Send(_mapper.Map<GetDeployments>(model));
     }
 }
