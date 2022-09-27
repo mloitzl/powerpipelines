@@ -1,0 +1,39 @@
+﻿on: 
+  push:
+    paths:
+    - 'blogdeployments.azureservicebus.proxy'
+    - '.github/workflows/blogdeployments.azureservicebus.proxy.yaml'
+
+
+name: DeployServiceBusProxy
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      FUNCTION_APP_PATH: 'blogdeployments.azureservicebus.proxy'
+      FUNCTION_APP_NAME: 'blogdeployments-azureservicebus-proxy'
+
+    steps:
+      - uses: actions/setup-dotnet@v2
+      - uses: actions/checkout@v3
+        name: Build Function App
+#        with:
+#          dotnet-version: '6.0.x'
+      - run: |
+          pushd './${{ env.FUNCTION_APP_PATH }}'
+          dotnet build --configuration Release --output ./output
+          popd
+
+      - uses: Azure/functions-action@v1
+        name: Deploy Function App
+        with:
+          app-name: ${{ env.FUNCTION_APP_NAME }}
+          package: '${{ env.FUNCTION_APP_PATH }}/output'
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+        
+        
+      
+      
+      

@@ -77,7 +77,7 @@ public class QueueListener<TEvent, TCommand> : BackgroundService
        
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.ExchangeDeclare("deployments_exchange", "direct");
+            _channel.ExchangeDeclare("deployments_exchange", ExchangeType.Direct);
             _queueName = _channel.QueueDeclare().QueueName;
 
             // todo: the only difference is the routingkey, it seems that 

@@ -28,7 +28,7 @@ public class EventSender<T> : IEventSender<T>
         using (var channel = connection.CreateModel())
         {
             channel.ExchangeDeclare("deployments_exchange",
-                "direct");
+                ExchangeType.Direct);
 
             var msg = JsonSerializer.Serialize(@event);
 
