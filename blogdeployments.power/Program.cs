@@ -36,6 +36,7 @@ builder.Services.AddHostedService<QueueListener<PowerOnRequested, PowerOn>>();
 builder.Services.AddHostedService<QueueListener<ShutdownInitiated, CheckHostStatus>>();
 builder.Services.AddHostedService<QueueListener<PowerOnCompleted, UpdatePowerStatus>>();
 builder.Services.AddTransient<IEventSender<ShutdownInitiated>, ShutdownInitiatedEventSender>();
+builder.Services.AddTransient<IEventSender<ShutdownCompleted>, ShutdownCompletedEventSender>();
 
 builder.Services.AddSingleton<IClusterPowerStatusRepository, ClusterPowerStatusRepository>();
 

@@ -1,0 +1,113 @@
+version: "3.9"
+services:
+
+  couchdb:
+    image: couchdb:3.2.0
+    hostname: couchdb
+    ports:
+      - "5984:5984"
+    volumes:
+      - $HOME/.secrets/couchdb/local.ini:/opt/couchdb/etc/local.ini
+
+  rabbitmq:
+    image: rabbitmq:3.8.8-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  dockeragent:
+    hostname: dockeragent
+    build:
+      context: .
+      dockerfile: blogdeployments.dockeragent/Dockerfile
+    environment:
+      - Logging__LogLevel__blogdeployments=trace
+      - RabbitMQ__HostName=rabbitmq
+      - ASPNETCORE_URLS=http://+:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - "rabbitmq"
+
+  agentsmith:
+    hostname: agentsmith
+    build:
+      context: .
+      dockerfile: blogdeployments.agent/Dockerfile
+    environment:
+      - Logging__LogLevel__blogdeployments=trace
+#      - Agent__RunningInContainer=true
+      - Agent__DryRun=false
+      - RabbitMQ__HostName=rabbitmq
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - 12350:80
+    depends_on:
+      - "rabbitmq"
+      - "power"
+      - "api"
+  
+  agentjohnson:
+    hostname: agentjohnson
+    build:
+      context: .
+      dockerfile: blogdeployments.agent/Dockerfile
+    environment:
+      - Logging__LogLevel__blogdeployments=trace
+#      - Agent__RunningInContainer=true
+      - Agent__DryRun=false
+      - RabbitMQ__HostName=rabbitmq
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - 12351:80
+    depends_on:
+      - "rabbitmq"
+      - "power"
+      - "api"
+
+  power:
+    hostname: power
+    build: 
+      context: .
+      dockerfile: blogdeployments.power/Dockerfile
+    environment:
+      - Logging__LogLevel__blogdeployments=trace
+      - RabbitMQ__HostName=rabbitmq
+      - Raspbee__Proto=http
+      - Raspbee__Host=192.168.1.123
+      - Raspbee__Port=8080
+      - couchdb__proto=http
+      - couchdb__host=couchdb
+      - couchdb__port=5984
+      - couchdb__user=Administrator
+      - couchdb__password=A8pi2shuYkeUjYfudKRtFsHCoP
+      - ClusterTopology__ClusterId=852b1adc-9999-4db6-9b48-809f346b5fe3
+      - ClusterTopology__Hosts__0=agentsmith
+      - ClusterTopology__Hosts__1=agentjohnson
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - 8081:80
+    depends_on:
+      - "rabbitmq"
+      - "couchdb"
+
+  api:
+    hostname: api
+    build:
+      context: .
+      dockerfile: blogdeployments.api/Dockerfile
+    environment:
+      - Logging__LogLevel__blogdeployments=trace
+      - RabbitMQ__HostName=rabbitmq
+      - couchdb__proto=http
+      - couchdb__host=couchdb
+      - couchdb__port=5984
+      - couchdb__user=Administrator
+      - couchdb__password=A8pi2shuYkeUjYfudKRtFsHCoP
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - 8080:80
+    depends_on:
+      - "rabbitmq"
+      - "couchdb"

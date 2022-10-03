@@ -28,11 +28,10 @@ public class RaspbeeService : IRaspbeeService
 
     private bool ExecuteRequest(bool flag)
     {
-        _logger.LogDebug("Powering '{Flag}'...", flag);
+        _logger.LogDebug("Powering Light with id {LightId}: '{Flag}'", _configuration.LightId, flag);
 
         var client = new RestClient($"{_configuration.Proto}://{_configuration.Host}:{_configuration.Port}");
-        var request = new RestRequest($"api/{_configuration.ApiKey}/lights/84:fd:27:ff:fe:47:bb:c3-01/state",
-            Method.PUT);
+        var request = new RestRequest($"api/{_configuration.ApiKey}/lights/{_configuration.LightId}/state", Method.PUT);
 
         request.AddJsonBody(new {on = flag});
 

@@ -23,6 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.repository.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.azurereceiver", "blogdeployments.azurereceiver\blogdeployments.azurereceiver.csproj", "{7255E661-FC67-4EA1-9E23-9E7178A30CB2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.handler", "blogdeployments.handler\blogdeployments.handler.csproj", "{A59C4E10-C985-4D1D-BCC5-73266C8CE158}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.dockeragent", "blogdeployments.dockeragent\blogdeployments.dockeragent.csproj", "{5B68FB15-43F7-402F-A0EC-D4F2E8A643CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +76,13 @@ Global
 		{7255E661-FC67-4EA1-9E23-9E7178A30CB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7255E661-FC67-4EA1-9E23-9E7178A30CB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7255E661-FC67-4EA1-9E23-9E7178A30CB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A59C4E10-C985-4D1D-BCC5-73266C8CE158}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A59C4E10-C985-4D1D-BCC5-73266C8CE158}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A59C4E10-C985-4D1D-BCC5-73266C8CE158}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A59C4E10-C985-4D1D-BCC5-73266C8CE158}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B68FB15-43F7-402F-A0EC-D4F2E8A643CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B68FB15-43F7-402F-A0EC-D4F2E8A643CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B68FB15-43F7-402F-A0EC-D4F2E8A643CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B68FB15-43F7-402F-A0EC-D4F2E8A643CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

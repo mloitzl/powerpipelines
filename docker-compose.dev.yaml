@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   couchdb:
-    image: couchdb:3.2.0
+    image: couchdb:3.2.2
     hostname: couchdb
     ports:
       - "5984:5984"
