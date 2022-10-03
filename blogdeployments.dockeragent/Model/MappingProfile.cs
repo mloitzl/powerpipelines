@@ -8,7 +8,7 @@ public class MappingProfile: Profile
 
     public MappingProfile()
     {
-        CreateMap<PowerOnRequested, StartDatabase>();
-        CreateMap<PowerOnCompleted, StopDatabase>();
+        CreateMap<PowerOnRequested, StartContainers>();
+        CreateMap<PowerOffRequested, StopContainers>();
     }
 }
