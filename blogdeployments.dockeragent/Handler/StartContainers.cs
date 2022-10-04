@@ -9,15 +9,21 @@ public class StartContainers : IRequest<bool>
 {
     public class StartDatabaseHandler : IRequestHandler<StartContainers, bool>
     {
+        private readonly ILogger<StartDatabaseHandler> _logger;
         private readonly ContainerConfig _containerConfig;
 
-        public StartDatabaseHandler(IOptions<ContainerConfig> containerConfig)
+        public StartDatabaseHandler(
+            ILogger<StartDatabaseHandler> logger,
+            IOptions<ContainerConfig> containerConfig
+            )
         {
+            _logger = logger;
             _containerConfig = containerConfig.Value;
         }
 
         public async Task<bool> Handle(StartContainers request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Starting containers...");
             var started = false;
             var socket = Environment.OSVersion.Platform switch
             {

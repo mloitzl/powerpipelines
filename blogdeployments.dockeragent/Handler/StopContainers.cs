@@ -8,15 +8,22 @@ public class StopContainers : IRequest<bool>
 {
     public class StopDatabaseHandler : IRequestHandler<StopContainers, bool>
     {
+        private readonly ILogger<StopDatabaseHandler> _logger;
         private readonly ContainerConfig _containerConfig;
 
-        public StopDatabaseHandler(IOptions<ContainerConfig> config)
+        public StopDatabaseHandler(
+            ILogger<StopDatabaseHandler> logger,
+            IOptions<ContainerConfig> config
+            )
         {
+            _logger = logger;
             _containerConfig = config.Value;
         }
 
         public async Task<bool> Handle(StopContainers request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Stopping containers...");
+            
             var stopped = false;
 
             var socket = Environment.OSVersion.Platform switch
