@@ -9,6 +9,6 @@ public class MappingProfile: Profile
     public MappingProfile()
     {
         CreateMap<PowerOnRequested, StartContainers>();
-        CreateMap<PowerOffRequested, StopContainers>();
+        CreateMap<ShutdownCompleted, StopContainers>();
     }
 }
