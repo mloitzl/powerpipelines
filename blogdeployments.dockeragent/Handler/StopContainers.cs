@@ -26,16 +26,12 @@ public class StopContainers : IRequest<bool>
                 _ => throw new ApplicationException($"Platform {Environment.OSVersion.Platform} is not supported.")
             };
 
-            DockerClient client = new DockerClientConfiguration(
+            var client = new DockerClientConfiguration(
                     new Uri(socket))
                 .CreateClient();
 
             IList<ContainerListResponse> containers = await client.Containers.ListContainersAsync(
-                new ContainersListParameters()
-                // {
-                //     Limit = 10,
-                // }
-                , cancellationToken);
+                new ContainersListParameters(), cancellationToken);
 
             foreach (var container in _containerConfig.Containers)
             {

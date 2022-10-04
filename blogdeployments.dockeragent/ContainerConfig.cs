@@ -16,7 +16,7 @@ public class Container
 
 public class Port
 {
-    public List<PortBinding>  HostBindings { get; set; }
+    public List<PortBinding> HostBindings { get; set; }
     public long Container { get; set; }
 }
 

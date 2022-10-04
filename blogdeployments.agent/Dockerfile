@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN find . -type f
 RUN dotnet restore
-RUN dotnet publish -o /app/publish blogdeployments.agent/blogdeployments.agent.csproj
+RUN dotnet publish -c Release -o /app/publish blogdeployments.agent/blogdeployments.agent.csproj 
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine as runtime
 WORKDIR /app

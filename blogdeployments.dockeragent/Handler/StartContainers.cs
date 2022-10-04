@@ -3,6 +3,7 @@ using Docker.DotNet;
 using Docker.DotNet.Models;
 using MediatR;
 using Microsoft.Extensions.Options;
+using PortBinding = Docker.DotNet.Models.PortBinding;
 
 public class StartContainers : IRequest<bool>
 {
@@ -25,7 +26,7 @@ public class StartContainers : IRequest<bool>
                 _ => throw new ApplicationException($"Platform {Environment.OSVersion.Platform} is not supported.")
             };
 
-            DockerClient client = new DockerClientConfiguration(
+            var client = new DockerClientConfiguration(
                     new Uri(socket))
                 .CreateClient();
 
@@ -35,7 +36,7 @@ public class StartContainers : IRequest<bool>
                     new ImagesCreateParameters
                     {
                         FromImage = container.Image,
-                        Tag = container.Tag,
+                        Tag = container.Tag
                     },
                     null
                     ,
@@ -49,11 +50,11 @@ public class StartContainers : IRequest<bool>
                     container.Mounts.Select(m => $"{ReplaceTokens(m.Source)}:{m.Target}")
                 );
 
-                var portBindings = new Dictionary<string, IList<Docker.DotNet.Models.PortBinding>>(
-                    container.Ports.Select(p => new KeyValuePair<string, IList<Docker.DotNet.Models.PortBinding>>(
+                var portBindings = new Dictionary<string, IList<PortBinding>>(
+                    container.Ports.Select(p => new KeyValuePair<string, IList<PortBinding>>(
                         p.Container.ToString(),
-                        new List<Docker.DotNet.Models.PortBinding>(
-                            p.HostBindings.Select(hb => new Docker.DotNet.Models.PortBinding
+                        new List<PortBinding>(
+                            p.HostBindings.Select(hb => new PortBinding
                             {
                                 HostPort = hb.HostPort.ToString(),
                                 HostIP = hb.HostIp
@@ -62,17 +63,17 @@ public class StartContainers : IRequest<bool>
                 );
 
                 var createContainerResponse = await client.Containers.CreateContainerAsync(
-                    new CreateContainerParameters()
+                    new CreateContainerParameters
                     {
                         Image = $"{container.Image}:{container.Tag}",
                         Name = container.Name,
                         // https://github.com/dotnet/Docker.DotNet/issues/134#issuecomment-292053084
                         // Env = new[] { "ACCEPT_EULA=Y", $"SA_PASSWORD={s_saPassword}" },
                         ExposedPorts = exposedPorts,
-                        HostConfig = new HostConfig()
+                        HostConfig = new HostConfig
                         {
                             Binds = mounts,
-                            PortBindings = portBindings,
+                            PortBindings = portBindings
                         }
                     }, cancellationToken);
 
@@ -89,7 +90,7 @@ public class StartContainers : IRequest<bool>
             var homePath = Environment.OSVersion.Platform is PlatformID.Unix or PlatformID.MacOSX
                 ? Environment.GetEnvironmentVariable("HOME")
                 : Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-            
+
             return tokenString.Replace("$HOME", homePath);
         }
     }
