@@ -1,14 +1,10 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine as build
 WORKDIR /app
-
-COPY . ./
+COPY . .
 RUN dotnet restore
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -o /app/publish blogdeployments.dockeragent/blogdeployments.dockeragent.csproj
 
-
-
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine as runtime
 WORKDIR /app
-
-COPY --from=build-env /app/out .
-ENTRYPOINT ["dotnet", "blogdeployments.dockeragent.dll"]
+COPY --from=build /app/publish /app
+ENTRYPOINT [ "dotnet", "/app/blogdeployments.dockeragent.dll" ]
