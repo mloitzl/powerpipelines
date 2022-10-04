@@ -14,7 +14,7 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
 builder.Services.AddHostedService<QueueListener<PowerOnRequested, StartContainers>>();
-builder.Services.AddHostedService<QueueListener<PowerOffRequested, StopContainers>>();
+builder.Services.AddHostedService<QueueListener<ShutdownCompleted, StopContainers>>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
