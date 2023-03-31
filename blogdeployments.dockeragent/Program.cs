@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Net;
+using System.Reflection;
 using blogdeployments.dockeragent;
 using blogdeployments.domain.Events;
 using blogdeployments.events;
@@ -16,7 +17,8 @@ builder.Logging.AddOpenTelemetry(options =>
                     .CreateDefault()
                     .AddService(
                         serviceName: "dockeragent",
-                        serviceVersion: "1.0"));
+                        serviceVersion: "1.0",
+                        serviceInstanceId: Dns.GetHostName()));
             options.IncludeFormattedMessage = options.IncludeFormattedMessage;
             options.IncludeScopes = options.IncludeScopes;
             options.ParseStateValues = options.ParseStateValues;

@@ -1,3 +1,4 @@
+using System.Net;
 using System.Reflection;
 using blogdeployments.api;
 using blogdeployments.domain;
@@ -13,12 +14,41 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
 
 var sharePointUri = "sharePointUri";
 
 var builder = WebApplication.CreateBuilder(args);
 
 Console.WriteLine(builder.Configuration.GetDebugView());
+
+builder.Logging.AddOpenTelemetry(options =>
+{
+    options.SetResourceBuilder(
+        ResourceBuilder
+            .CreateDefault()
+            .AddService(
+                serviceName: "api",
+                serviceVersion: "1.0",
+                serviceInstanceId: Dns.GetHostName()));
+    options.IncludeFormattedMessage = options.IncludeFormattedMessage;
+    options.IncludeScopes = options.IncludeScopes;
+    options.ParseStateValues = options.ParseStateValues;
+    options.AddConsoleExporter();
+
+    // https://github.com/open-telemetry/opentelemetry-dotnet/pull/3186
+    // https://medium.com/software-development-turkey/observability-concepts-and-open-telemetry-5e21c4884095
+    options.AddOtlpExporter(exporterOptions =>
+    {
+        var otlpHostName = Environment.GetEnvironmentVariable("OTLP_HOSTNAME") ?? "localhost";
+        exporterOptions.Endpoint = new Uri($"http://{otlpHostName}:4317");
+        exporterOptions.Protocol = OtlpExportProtocol.Grpc;
+                
+    });
+});
+
 
 // Add services to the container.
 
