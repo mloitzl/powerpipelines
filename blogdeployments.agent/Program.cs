@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,21 @@ builder.Logging.AddOpenTelemetry(options =>
 
 
 // Add services to the container.
+builder.Services.AddOpenTelemetry()
+    .WithTracing(builder => builder
+        .AddAspNetCoreInstrumentation()
+        .AddSource(nameof(Program))
+        .SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService(
+                "agent", 
+                serviceVersion: "1.0",
+                serviceInstanceId: Dns.GetHostName()))
+        .AddOtlpExporter(options =>
+        {
+            var otlpHostName = Environment.GetEnvironmentVariable("OTLP_HOSTNAME") ?? "localhost";
+            options.Endpoint = new Uri($"http://{otlpHostName}:4317");
+            options.Protocol = OtlpExportProtocol.Grpc;
+        }));
 
 builder.Services.AddControllers();
 builder.Services.AddApplicationInsightsTelemetry();
