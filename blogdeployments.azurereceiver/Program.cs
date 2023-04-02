@@ -3,7 +3,7 @@ using blogdeployments.azurereceiver;
 using blogdeployments.azurereceiver.BackgroundService;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
-using blogdeployments.events.EventSender;
+using blogdeployments.events.Sender;
 using blogdeployments.handler;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;

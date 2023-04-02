@@ -3,7 +3,8 @@ using System.Reflection;
 using blogdeployments.api;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
-using blogdeployments.events.EventSender;
+using blogdeployments.events;
+using blogdeployments.events.Sender;
 using blogdeployments.handler;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;
@@ -54,9 +55,9 @@ builder.Logging.AddOpenTelemetry(options =>
 // Add services to the container.
 
 builder.Services.AddOpenTelemetry()
-            .WithTracing(builder => builder
+            .WithTracing(tracebuilder => tracebuilder
                 .AddAspNetCoreInstrumentation()
-                .AddSource(nameof(Program))
+                .AddSource(nameof(EventSender))
                 .SetResourceBuilder(ResourceBuilder.CreateDefault()
                     .AddService(
                         "api", 

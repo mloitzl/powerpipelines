@@ -3,7 +3,7 @@ using System.Reflection;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
 using blogdeployments.events;
-using blogdeployments.events.EventSender;
+using blogdeployments.events.Sender;
 using blogdeployments.power;
 using blogdeployments.power.Handler;
 using blogdeployments.power.Service;
@@ -13,6 +13,7 @@ using MediatR;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,13 +50,29 @@ builder.Logging.AddOpenTelemetry(options =>
 var couchDbHost =
     $"{builder.Configuration["couchdb:proto"]}://{builder.Configuration["couchdb:host"]}:{builder.Configuration["couchdb:port"]}";
 
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracebuilder => tracebuilder
+        .AddAspNetCoreInstrumentation()
+        .AddSource(nameof(QueueListenerBackgroundService))
+        .AddSource(nameof(EventSender))
+        .SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService(
+                "power", 
+                serviceVersion: "1.0",
+                serviceInstanceId: Dns.GetHostName()))
+        .AddOtlpExporter(options =>
+        {
+            var otlpHostName = Environment.GetEnvironmentVariable("OTLP_HOSTNAME") ?? "localhost";
+            options.Endpoint = new Uri($"http://{otlpHostName}:4317");
+            options.Protocol = OtlpExportProtocol.Grpc;
+        }));
+
 builder.Services.AddCouchContext<DeploymentsContext>(optionBuilder => optionBuilder
     .UseEndpoint(couchDbHost)
     .EnsureDatabaseExists()
     .UseBasicAuthentication(
         builder.Configuration["couchdb:user"],
         builder.Configuration["couchdb:password"]));
-
 
 builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.Configure<RaspbeeConfiguration>(builder.Configuration.GetSection("Raspbee"));

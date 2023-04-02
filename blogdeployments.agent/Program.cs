@@ -6,7 +6,7 @@ using blogdeployments.agent.Handler;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
 using blogdeployments.events;
-using blogdeployments.events.EventSender;
+using blogdeployments.events.Sender;
 using MediatR;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
@@ -46,9 +46,10 @@ builder.Logging.AddOpenTelemetry(options =>
 
 // Add services to the container.
 builder.Services.AddOpenTelemetry()
-    .WithTracing(builder => builder
+    .WithTracing(tracebuilder => tracebuilder
         .AddAspNetCoreInstrumentation()
-        .AddSource(nameof(Program))
+        .AddSource(nameof(EventSender))
+        .AddSource(nameof(QueueListenerBackgroundService))
         .SetResourceBuilder(ResourceBuilder.CreateDefault()
             .AddService(
                 "agent", 

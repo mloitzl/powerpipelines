@@ -2,7 +2,7 @@ using blogdeployments.domain.Events;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace blogdeployments.events.EventSender;
+namespace blogdeployments.events.Sender;
 
 public class ShutdownCompletedEventSender : EventSender<ShutdownCompleted>
 {

@@ -37,9 +37,9 @@ builder.Logging.AddOpenTelemetry(options =>
         });
 
 builder.Services.AddOpenTelemetry()
-    .WithTracing(builder => builder
+    .WithTracing(tracebuilder => tracebuilder
         .AddAspNetCoreInstrumentation()
-        .AddSource(nameof(Program))
+        .AddSource(nameof(QueueListenerBackgroundService))
         .SetResourceBuilder(ResourceBuilder.CreateDefault()
             .AddService(
                 "dockeragent", 
