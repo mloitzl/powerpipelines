@@ -70,7 +70,7 @@ builder.Services.AddSwaggerGen();
 
 var agentConfiguration = new AgentConfiguration();
 builder.Configuration.GetSection("Agent").Bind(agentConfiguration);
-agentConfiguration.RunningInContainer = builder.Configuration.GetValue<bool>("RUNNING_IN_CONTAINER");
+agentConfiguration.RunningInContainer = builder.Configuration.GetValue<bool>("DOTNET_RUNNING_IN_CONTAINER");
 builder.Services.AddSingleton(Options.Create(agentConfiguration));
 
 builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));
