@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>annotations</Nullable>
     <UserSecretsId>blogdeployments.power.tests</UserSecretsId>
     <IsPackable>false</IsPackable>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
