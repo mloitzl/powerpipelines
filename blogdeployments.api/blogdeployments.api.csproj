@@ -2,9 +2,10 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <Nullable>enable</Nullable>
+        <Nullable>annotations</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>blogdeployments.api</UserSecretsId>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
@@ -25,6 +26,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\blogdeployments.events\blogdeployments.events.csproj" />
+        <ProjectReference Include="..\blogdeployments.instrumentation\blogdeployments.instrumentation.csproj" />
         <ProjectReference Include="..\blogdeployments.repository\blogdeployments.repository.csproj" />
         <ProjectReference Include="..\blogdeployments.domain\blogdeployments.domain.csproj" />
         <ProjectReference Include="..\blogdeployments.handler\blogdeployments.handler.csproj" />

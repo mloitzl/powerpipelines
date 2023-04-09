@@ -7,7 +7,7 @@ public class RaspbeeService : IRaspbeeService
 {
     private readonly RaspbeeConfiguration _configuration;
     private readonly ILogger<RaspbeeService> _logger;
-
+    
     public RaspbeeService(
         IOptions<RaspbeeConfiguration> configuration,
         ILogger<RaspbeeService> logger)
@@ -35,7 +35,11 @@ public class RaspbeeService : IRaspbeeService
 
         request.AddJsonBody(new {on = flag});
 
-        return client.Execute(request).IsSuccessful;
+        var restResponse = client.Execute(request);
+        _logger.LogDebug("{Response}", restResponse.Content);
+        Console.WriteLine(restResponse.Content);
+
+        return restResponse.IsSuccessful;
     }
 }
 

@@ -29,6 +29,8 @@ services:
       - xpack.watcher.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - discovery.type=single-node
+    volumes:
+      - ./storage/elasticsearch:/usr/share/elasticsearch/data:rw
     ports:
       - 9200:9200
 
@@ -62,12 +64,14 @@ services:
       dockerfile: blogdeployments.dockeragent/Dockerfile
     environment:
       - Logging__LogLevel__blogdeployments=trace
+      - OTLP_HOSTNAME=otel-collector
       - RabbitMQ__HostName=rabbitmq
       - ASPNETCORE_URLS=http://+:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - "rabbitmq"
+      - "otel-collector"
 
   agentsmith:
     hostname: agentsmith
@@ -76,8 +80,9 @@ services:
       dockerfile: blogdeployments.agent/Dockerfile
     environment:
       - Logging__LogLevel__blogdeployments=trace
-#      - Agent__RunningInContainer=true
+      - Agent__RunningInContainer=true
       - Agent__DryRun=false
+      - OTLP_HOSTNAME=otel-collector
       - RabbitMQ__HostName=rabbitmq
       - ASPNETCORE_URLS=http://+:80
     ports:
@@ -86,6 +91,7 @@ services:
       - "rabbitmq"
       - "power"
       - "api"
+      - "otel-collector"
   
   agentjohnson:
     hostname: agentjohnson
@@ -94,8 +100,9 @@ services:
       dockerfile: blogdeployments.agent/Dockerfile
     environment:
       - Logging__LogLevel__blogdeployments=trace
-#      - Agent__RunningInContainer=true
+      - Agent__RunningInContainer=true
       - Agent__DryRun=false
+      - OTLP_HOSTNAME=otel-collector
       - RabbitMQ__HostName=rabbitmq
       - ASPNETCORE_URLS=http://+:80
     ports:
@@ -104,6 +111,7 @@ services:
       - "rabbitmq"
       - "power"
       - "api"
+      - "otel-collector"
 
   power:
     hostname: power
@@ -112,6 +120,7 @@ services:
       dockerfile: blogdeployments.power/Dockerfile
     environment:
       - Logging__LogLevel__blogdeployments=trace
+      - OTLP_HOSTNAME=otel-collector
       - RabbitMQ__HostName=rabbitmq
       - Raspbee__Proto=http
       - Raspbee__Host=192.168.1.123
@@ -131,6 +140,7 @@ services:
     depends_on:
       - "rabbitmq"
       - "couchdb"
+      - "otel-collector"
 
   api:
     hostname: api
@@ -139,6 +149,7 @@ services:
       dockerfile: blogdeployments.api/Dockerfile
     environment:
       - Logging__LogLevel__blogdeployments=trace
+      - OTLP_HOSTNAME=otel-collector
       - RabbitMQ__HostName=rabbitmq
       - couchdb__proto=http
       - couchdb__host=couchdb
@@ -151,3 +162,4 @@ services:
     depends_on:
       - "rabbitmq"
       - "couchdb"
+      - "otel-collector"

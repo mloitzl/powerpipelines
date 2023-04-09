@@ -43,14 +43,14 @@ public class Shutdown : IRequest<bool>
 
             if (_options.Value.RunningInContainer)
             {
-                _logger.LogDebug("Running in a Container. Killing container by exiting with code 1");
+                _logger.LogDebug("## NOTE: Running in a Container. Killing container by exiting with code 1");
                 Environment.Exit(1);
                 return true;
             }
 
             if (_options.Value.DryRun)
             {
-                _logger.LogDebug("Dryrun. Not shutting down myself.");
+                _logger.LogDebug("## NOTE: DryRun. Not shutting down myself");
                 return true;
             }
 

@@ -1,4 +1,3 @@
-using System.Net;
 using System.Reflection;
 using blogdeployments.api;
 using blogdeployments.domain;
@@ -6,6 +5,7 @@ using blogdeployments.domain.Events;
 using blogdeployments.events;
 using blogdeployments.events.Sender;
 using blogdeployments.handler;
+using blogdeployments.instrumentation;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;
 using MediatR;
@@ -15,10 +15,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
-using OpenTelemetry.Exporter;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
 var sharePointUri = "sharePointUri";
 
@@ -26,49 +22,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 Console.WriteLine(builder.Configuration.GetDebugView());
 
-builder.Logging.AddOpenTelemetry(options =>
-{
-    options.SetResourceBuilder(
-        ResourceBuilder
-            .CreateDefault()
-            .AddService(
-                serviceName: "api",
-                serviceVersion: "1.0",
-                serviceInstanceId: Dns.GetHostName()));
-    options.IncludeFormattedMessage = options.IncludeFormattedMessage;
-    options.IncludeScopes = options.IncludeScopes;
-    options.ParseStateValues = options.ParseStateValues;
-    options.AddConsoleExporter();
-
-    // https://github.com/open-telemetry/opentelemetry-dotnet/pull/3186
-    // https://medium.com/software-development-turkey/observability-concepts-and-open-telemetry-5e21c4884095
-    options.AddOtlpExporter(exporterOptions =>
-    {
-        var otlpHostName = Environment.GetEnvironmentVariable("OTLP_HOSTNAME") ?? "localhost";
-        exporterOptions.Endpoint = new Uri($"http://{otlpHostName}:4317");
-        exporterOptions.Protocol = OtlpExportProtocol.Grpc;
-                
-    });
-});
-
+builder.Logging.AddOpenTelemetry("api", "1.0");
 
 // Add services to the container.
 
-builder.Services.AddOpenTelemetry()
-            .WithTracing(tracebuilder => tracebuilder
-                .AddAspNetCoreInstrumentation()
-                .AddSource(nameof(EventSender))
-                .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                    .AddService(
-                        "api", 
-                        serviceVersion: "1.0",
-                        serviceInstanceId: Dns.GetHostName()))
-                .AddOtlpExporter(options =>
-                {
-                    var otlpHostName = Environment.GetEnvironmentVariable("OTLP_HOSTNAME") ?? "localhost";
-                    options.Endpoint = new Uri($"http://{otlpHostName}:4317");
-                    options.Protocol = OtlpExportProtocol.Grpc;
-                }));
+builder.Services.AddOpenTelemetry("api", "1.0",
+    nameof(EventSender));
 
 builder.Services.AddControllers();
 builder.Services.AddApplicationInsightsTelemetry();
@@ -78,9 +37,9 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder.WithOrigins(
-                    "https://*.sharepoint.com", 
-                    "https://localhost:7099", 
-                    "http://localhost:3000", 
+                    "https://*.sharepoint.com",
+                    "https://localhost:7099",
+                    "http://localhost:3000",
                     "https://*.web.core.windows.net/")
                 .SetIsOriginAllowedToAllowWildcardSubdomains()
                 .AllowCredentials()
@@ -162,12 +121,12 @@ builder.Services.AddSwaggerGen(options =>
 );
 
 builder.Services.AddMediatR(
-    Assembly.GetExecutingAssembly(), 
+    Assembly.GetExecutingAssembly(),
     typeof(CreateDeployment).Assembly);
 
 builder.Services.AddAutoMapper(
     Assembly.GetExecutingAssembly(),
-    typeof(IDeploymentsRepository).Assembly, 
+    typeof(IDeploymentsRepository).Assembly,
     typeof(CreateDeployment.CreateDeploymentHandler).Assembly);
 
 builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMQ"));

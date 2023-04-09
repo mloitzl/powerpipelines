@@ -21,6 +21,7 @@ public class CheckHostStatus : IRequest<bool>
         private readonly ClusterTopologyConfiguration _clusterConfiguration;
         private readonly IEventSender<ShutdownInitiated> _shutdownInitiatedEventSender;
         private readonly IEventSender<ShutdownCompleted> _shutdownCompletedEventSender;
+        private readonly ApplicationConfiguration _applicationConfiguration;
         private readonly ILogger<CheckHostStatusHandler> _logger;
         private readonly IRaspbeeService _raspbeeService;
 
@@ -35,6 +36,7 @@ public class CheckHostStatus : IRequest<bool>
         {
             _shutdownInitiatedEventSender = shutdownInitiatedShutdownInitiatedEventSender;
             _shutdownCompletedEventSender = shutdownCompletedEventSender;
+            _applicationConfiguration = applicationConfiguration.Value;
             _clusterConfiguration = clusterConfiguration.Value;
             _clusterPowerStatusRepository = clusterPowerStatusRepository;
             _raspbeeService = raspbeeService;
@@ -68,7 +70,7 @@ public class CheckHostStatus : IRequest<bool>
                 // If an error occurred, display the exception to the user.  
                 if (e.Error != null)
                 {
-                    // e.g. hostname does not resolve (container), assume its down
+                    // e.g. hostname does not resolve (usually because it was a container), assume its down
                     _logger.LogDebug("Ping failed: {PingError}", e.Error.ToString());
 
                     await ConcludePowerOff(requestHostname);
@@ -90,13 +92,22 @@ public class CheckHostStatus : IRequest<bool>
 
                 if (reply != null && reply.Status == IPStatus.Success)
                 {
-                    Thread.Sleep(1000);
-
-                    await _shutdownInitiatedEventSender.Send(new ShutdownInitiated
+                    // Local development mode, we will not shut down ;)
+                    if (_applicationConfiguration.DryRun)
                     {
-                        Hostname = requestHostname,
-                        InitiatedTime = request.InitiatedTime
-                    });
+                        _logger.LogDebug("## NOTE: DryRun mode calling {MethodName}", nameof(ConcludePowerOff));
+                        await ConcludePowerOff(requestHostname);
+                    }
+                    else
+                    {
+                        Thread.Sleep(1000);
+
+                        await _shutdownInitiatedEventSender.Send(new ShutdownInitiated
+                        {
+                            Hostname = requestHostname,
+                            InitiatedTime = request.InitiatedTime
+                        });
+                    }
                 }
 
                 // Let the main thread resume.  

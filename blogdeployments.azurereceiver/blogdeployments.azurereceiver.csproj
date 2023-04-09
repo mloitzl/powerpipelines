@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>annotations</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>blogdeployments.azurereceiver</UserSecretsId>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

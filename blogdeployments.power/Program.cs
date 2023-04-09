@@ -1,19 +1,15 @@
-using System.Net;
 using System.Reflection;
 using blogdeployments.domain;
 using blogdeployments.domain.Events;
 using blogdeployments.events;
 using blogdeployments.events.Sender;
+using blogdeployments.instrumentation;
 using blogdeployments.power;
 using blogdeployments.power.Handler;
 using blogdeployments.power.Service;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;
 using MediatR;
-using OpenTelemetry.Exporter;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,51 +17,13 @@ builder.Services.AddApplicationInsightsTelemetry();
 
 Console.WriteLine(builder.Configuration.GetDebugView());
 
-builder.Logging.AddOpenTelemetry(options =>
-{
-    options.SetResourceBuilder(
-        ResourceBuilder
-            .CreateDefault()
-            .AddService(
-                serviceName: "power",
-                serviceVersion: "1.0",
-                serviceInstanceId: Dns.GetHostName()));
-    options.IncludeFormattedMessage = options.IncludeFormattedMessage;
-    options.IncludeScopes = options.IncludeScopes;
-    options.ParseStateValues = options.ParseStateValues;
-    options.AddConsoleExporter();
+builder.Logging.AddOpenTelemetry("power", "1.0");
 
-    // https://github.com/open-telemetry/opentelemetry-dotnet/pull/3186
-    // https://medium.com/software-development-turkey/observability-concepts-and-open-telemetry-5e21c4884095
-    options.AddOtlpExporter(exporterOptions =>
-    {
-        var otlpHostName = Environment.GetEnvironmentVariable("OTLP_HOSTNAME") ?? "localhost";
-        exporterOptions.Endpoint = new Uri($"http://{otlpHostName}:4317");
-        exporterOptions.Protocol = OtlpExportProtocol.Grpc;
-                
-    });
-});
-
+builder.Services.AddOpenTelemetry("power", "1.0",
+    nameof(QueueListenerBackgroundService), nameof(EventSender));
 
 var couchDbHost =
     $"{builder.Configuration["couchdb:proto"]}://{builder.Configuration["couchdb:host"]}:{builder.Configuration["couchdb:port"]}";
-
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracebuilder => tracebuilder
-        .AddAspNetCoreInstrumentation()
-        .AddSource(nameof(QueueListenerBackgroundService))
-        .AddSource(nameof(EventSender))
-        .SetResourceBuilder(ResourceBuilder.CreateDefault()
-            .AddService(
-                "power", 
-                serviceVersion: "1.0",
-                serviceInstanceId: Dns.GetHostName()))
-        .AddOtlpExporter(options =>
-        {
-            var otlpHostName = Environment.GetEnvironmentVariable("OTLP_HOSTNAME") ?? "localhost";
-            options.Endpoint = new Uri($"http://{otlpHostName}:4317");
-            options.Protocol = OtlpExportProtocol.Grpc;
-        }));
 
 builder.Services.AddCouchContext<DeploymentsContext>(optionBuilder => optionBuilder
     .UseEndpoint(couchDbHost)
