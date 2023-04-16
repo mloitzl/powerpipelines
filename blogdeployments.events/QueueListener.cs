@@ -86,7 +86,7 @@ public class QueueListener<TEvent, TCommand>: QueueListenerBackgroundService
                 ActivityHelper.AddMessagingTags(activity);
             }catch (Exception ex)
             {
-                this._logger.LogError(ex, "Message processing failed.");
+                this._logger.LogError(ex, "Message processing failed");
             }
         };
         _channel.BasicConsume(_queueName, true, consumer);
@@ -133,10 +133,11 @@ public class QueueListener<TEvent, TCommand>: QueueListenerBackgroundService
     
     private void HandleMessage(TEvent? message)
     {
-        // note: return value swallowed
         _logger.LogDebug("[RX] Dispatching ({Type}) {Message}", typeof(TCommand).FullName, message);
+        
         var command = _mapper.Map<TCommand>(message);
 
+        // note: return value swallowed
         _mediator.Send(command);
     }
     
@@ -152,7 +153,7 @@ public class QueueListener<TEvent, TCommand>: QueueListenerBackgroundService
         }
         catch (Exception ex)
         {
-            this._logger.LogError(ex, "Failed to extract trace context.");
+            this._logger.LogError(ex, "Failed to extract trace context");
         }
 
         return Enumerable.Empty<string>();

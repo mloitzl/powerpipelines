@@ -11,5 +11,7 @@ public class MappingProfile : Profile
         CreateMap<PowerOnRequested, PowerOn>();
         CreateMap<ShutdownInitiated, CheckHostStatus>();
         CreateMap<PowerOnCompleted, UpdatePowerStatus>();
+        CreateMap<PowerOnCompleted, UpdateClusterStatus>();
+        CreateMap<ShutdownCompleted, UpdateClusterStatus>();
     }
 }

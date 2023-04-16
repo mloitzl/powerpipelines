@@ -6,6 +6,7 @@ using blogdeployments.events.Sender;
 using blogdeployments.instrumentation;
 using blogdeployments.power;
 using blogdeployments.power.Handler;
+using blogdeployments.power.Sagas;
 using blogdeployments.power.Service;
 using blogdeployments.repository;
 using CouchDB.Driver.DependencyInjection;
@@ -40,8 +41,16 @@ builder.Services.Configure<ClusterTopologyConfiguration>(builder.Configuration.G
 builder.Services.AddHostedService<QueueListener<PowerOnRequested, PowerOn>>();
 builder.Services.AddHostedService<QueueListener<ShutdownInitiated, CheckHostStatus>>();
 builder.Services.AddHostedService<QueueListener<PowerOnCompleted, UpdatePowerStatus>>();
+builder.Services.AddHostedService<QueueListener<PowerOnCompleted, UpdateClusterStatus>>();
+builder.Services.AddHostedService<QueueListener<ShutdownCompleted, UpdateClusterStatus>>();
+
 builder.Services.AddTransient<IEventSender<ShutdownInitiated>, ShutdownInitiatedEventSender>();
 builder.Services.AddTransient<IEventSender<ShutdownCompleted>, ShutdownCompletedEventSender>();
+builder.Services.AddTransient<IEventSender<ClusterIsUp>, ClusterIsUpEventSender>();
+builder.Services.AddTransient<IEventSender<ClusterIsDown>, ClusterIsDownEventSender>();
+
+builder.Services.AddSingleton<ClusterIsUpSaga>();
+builder.Services.AddSingleton<ClusterIsDownSaga>();
 
 builder.Services.AddSingleton<IClusterPowerStatusRepository, ClusterPowerStatusRepository>();
 

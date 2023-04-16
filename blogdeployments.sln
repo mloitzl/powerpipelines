@@ -19,13 +19,29 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.domain", "b
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.power.tests", "blogdeployments.power.tests\blogdeployments.power.tests.csproj", "{060A3E33-5829-4220-BA60-E4DF2CF7345C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.repository.tests", "blogdeployments.repository.tests\blogdeployments.repository.tests.csproj", "{4AD0A90A-9968-4D4C-9F83-7D314D7C953D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.azurereceiver", "blogdeployments.azurereceiver\blogdeployments.azurereceiver.csproj", "{7255E661-FC67-4EA1-9E23-9E7178A30CB2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.handler", "blogdeployments.handler\blogdeployments.handler.csproj", "{A59C4E10-C985-4D1D-BCC5-73266C8CE158}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.dockeragent", "blogdeployments.dockeragent\blogdeployments.dockeragent.csproj", "{5B68FB15-43F7-402F-A0EC-D4F2E8A643CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.ui", "blogdeployments.ui\blogdeployments.ui.csproj", "{160AD65A-93DB-46BC-969C-76819036DF69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blogdeployments.instrumentation", "blogdeployments.instrumentation\blogdeployments.instrumentation.csproj", "{0CBE8FF7-D94B-494F-AFBE-2EE99474AADD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "containers", "containers", "{D562A733-9493-4EAA-BF53-63821FC940D1}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.dev.yaml = docker-compose.dev.yaml
+		docker-compose.int.yaml = docker-compose.int.yaml
+		otel-collector-config.yaml = otel-collector-config.yaml
+		deploy.sh = deploy.sh
+		.deploy.sh = .deploy.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{C76FF7F3-5B7A-4EE6-BD87-6B8443B4E91C}"
+	ProjectSection(SolutionItems) = preProject
+		deploy.sh = deploy.sh
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,10 +84,6 @@ Global
 		{060A3E33-5829-4220-BA60-E4DF2CF7345C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{060A3E33-5829-4220-BA60-E4DF2CF7345C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{060A3E33-5829-4220-BA60-E4DF2CF7345C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4AD0A90A-9968-4D4C-9F83-7D314D7C953D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4AD0A90A-9968-4D4C-9F83-7D314D7C953D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4AD0A90A-9968-4D4C-9F83-7D314D7C953D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4AD0A90A-9968-4D4C-9F83-7D314D7C953D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7255E661-FC67-4EA1-9E23-9E7178A30CB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7255E661-FC67-4EA1-9E23-9E7178A30CB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7255E661-FC67-4EA1-9E23-9E7178A30CB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -84,5 +96,13 @@ Global
 		{5B68FB15-43F7-402F-A0EC-D4F2E8A643CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B68FB15-43F7-402F-A0EC-D4F2E8A643CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B68FB15-43F7-402F-A0EC-D4F2E8A643CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{160AD65A-93DB-46BC-969C-76819036DF69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{160AD65A-93DB-46BC-969C-76819036DF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{160AD65A-93DB-46BC-969C-76819036DF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{160AD65A-93DB-46BC-969C-76819036DF69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CBE8FF7-D94B-494F-AFBE-2EE99474AADD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CBE8FF7-D94B-494F-AFBE-2EE99474AADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CBE8FF7-D94B-494F-AFBE-2EE99474AADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CBE8FF7-D94B-494F-AFBE-2EE99474AADD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

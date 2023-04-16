@@ -26,7 +26,7 @@ public static class LoggingBuilderExtensions
                 options.IncludeFormattedMessage = true;
                 options.IncludeScopes = true;
                 options.ParseStateValues = options.ParseStateValues;
-                options.AddConsoleExporter();
+                // options.AddConsoleExporter();
 
                 // https://github.com/open-telemetry/opentelemetry-dotnet/pull/3186
                 // https://medium.com/software-development-turkey/observability-concepts-and-open-telemetry-5e21c4884095

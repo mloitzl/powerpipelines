@@ -1,5 +1,6 @@
 using AutoMapper;
 using blogdeployments.domain;
+using Microsoft.Extensions.Logging;
 
 namespace blogdeployments.repository;
 
@@ -7,35 +8,39 @@ public class ClusterPowerStatusRepository : IClusterPowerStatusRepository
 {
     private readonly DeploymentsContext _context;
     private readonly IMapper _mapper;
+    private readonly ILogger<ClusterPowerStatusRepository> _logger;
 
     public ClusterPowerStatusRepository(
         DeploymentsContext context,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<ClusterPowerStatusRepository> logger
+        )
     {
         _context = context;
         _mapper = mapper;
+        _logger = logger;
     }
 
-    public async Task<ClusterPowerStatus> GetPowerStatus(string clusterId)
+    public async Task<ClusterPower> GetPowerStatus(string clusterId)
     {
         var existing = await _context.ClusterPower.FindAsync(clusterId);
 
-        return existing != null ? _mapper.Map<ClusterPowerStatus>(existing) : null;
+        return existing != null ? _mapper.Map<ClusterPower>(existing) : null;
     }
 
     public async Task<HostPowerStatus> EnsureHostPowerStatus(string clusterId, string hostname,
-        HostPowerStatus clusterPowerStatus)
+        HostPowerStatus hostPowerStatus)
     {
         var existing = await _context.ClusterPower.FindAsync(clusterId);
 
         if (existing == null)
         {
-            var @new = new ClusterPowerStatus
+            var @new = new ClusterPower
             {
                 // PowerRequestId = request.RequestId,
                 HostsPower = new Dictionary<string, HostPowerStatus>
                 {
-                    {hostname, clusterPowerStatus}
+                    {hostname, hostPowerStatus}
                 },
                 Id = clusterId
             };
@@ -43,10 +48,21 @@ public class ClusterPowerStatusRepository : IClusterPowerStatusRepository
         }
         else
         {
-            existing.HostsPower[hostname] = clusterPowerStatus;
-            await _context.ClusterPower.AddOrUpdateAsync(existing);
+            existing.HostsPower[hostname] = hostPowerStatus;
+            
+            try
+            {
+                await _context.ClusterPower.AddOrUpdateAsync(existing);
+            }
+            catch (CouchDB.Driver.Exceptions.CouchConflictException e)
+            {
+                existing = await _context.ClusterPower.FindAsync(clusterId);
+                existing.HostsPower[hostname] = hostPowerStatus;
+                _logger.LogWarning("Had to re-fetch {DocumentId} due to update conflict", clusterId);
+            }
+            
         }
 
-        return clusterPowerStatus;
+        return hostPowerStatus;
     }
 }

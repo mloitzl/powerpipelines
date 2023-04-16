@@ -40,7 +40,10 @@ public class PowerOn : IRequest<bool>
                     powerStatus.Key, powerStatus.Value);
 
             _logger.LogDebug("PowerOnHandler... switching on via _raspbeeService");
-            return _raspbeeService.PowerOn();
+            
+            _raspbeeService.PowerOn();
+
+            return _raspbeeService.IsOn;
         }
     }
 }

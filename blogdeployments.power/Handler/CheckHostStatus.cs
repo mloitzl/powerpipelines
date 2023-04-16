@@ -156,6 +156,14 @@ public class CheckHostStatus : IRequest<bool>
                     Status = PowerStatus.Off
                 });
 
+            
+            // fixme: This can now be done with CLusterIsDownSaga
+            await _shutdownCompletedEventSender.Send(new ShutdownCompleted
+            {
+                HostName = requestHostname,
+                PowerStatus = PowerStatus.Off
+            });
+            
             var clusterPowerStatus =
                 await _clusterPowerStatusRepository.GetPowerStatus(_clusterConfiguration.ClusterId);
 
@@ -167,6 +175,7 @@ public class CheckHostStatus : IRequest<bool>
 
             if (sb != null) _logger.LogDebug(sb.ToString());
 
+            // fixme: This can now be done with CLusterIsDownSaga
             // check if we can turn off (all hosts off)
             if (clusterPowerStatus
                 .HostsPower
@@ -174,7 +183,6 @@ public class CheckHostStatus : IRequest<bool>
                     kvp.Value.Status == PowerStatus.Off))
             {
                 _raspbeeService.PowerOff();
-                await _shutdownCompletedEventSender.Send(new ShutdownCompleted());
             }
         }
 

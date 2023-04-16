@@ -89,8 +89,6 @@ services:
       - 12350:80
     depends_on:
       - "rabbitmq"
-      - "power"
-      - "api"
       - "otel-collector"
   
   agentjohnson:
@@ -109,8 +107,6 @@ services:
       - 12351:80
     depends_on:
       - "rabbitmq"
-      - "power"
-      - "api"
       - "otel-collector"
 
   power:
@@ -123,6 +119,7 @@ services:
       - OTLP_HOSTNAME=otel-collector
       - RabbitMQ__HostName=rabbitmq
       - Raspbee__Proto=http
+      - Raspbee__ApiKey=testApiKey
       - Raspbee__Host=192.168.1.123
       - Raspbee__Port=8080
       - Raspbee__LightId=0c:43:14:ff:fe:a3:b1:c2-01

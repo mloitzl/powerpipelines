@@ -22,7 +22,8 @@ public class StartupService : Microsoft.Extensions.Hosting.BackgroundService
         _logger.LogDebug("Sending Event {EventName}", nameof(PowerOnCompleted));
         _eventSender.Send(new PowerOnCompleted
         {
-            Hostname = Dns.GetHostName()
+            Hostname = Dns.GetHostName(),
+            PowerStatus = PowerStatus.On
         });
         return Task.CompletedTask;
     }

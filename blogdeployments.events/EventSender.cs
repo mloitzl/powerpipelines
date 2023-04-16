@@ -37,7 +37,7 @@ public class EventSender<T> : EventSender, IEventSender<T>
     private readonly ILogger<EventSender<T>> _logger;
     private readonly IOptions<RabbitMqConfiguration> _options;
 
-    public EventSender(
+    protected EventSender(
         IOptions<RabbitMqConfiguration> options,
         ILogger<EventSender<T>> logger)
     {
@@ -67,7 +67,7 @@ public class EventSender<T> : EventSender, IEventSender<T>
                 false,
                 props,
                 Encoding.UTF8.GetBytes(msg));
-            _logger.LogDebug("[TX] Sent ({Type}) {Message}", msg, typeof(T).FullName);
+            _logger.LogDebug("[TX] Sent ({Type}) {Message}", typeof(T).FullName, msg);
         }
 
         return Task.CompletedTask;
@@ -91,7 +91,7 @@ public class EventSender<T> : EventSender, IEventSender<T>
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to inject trace context.");
+            _logger.LogError(ex, "Failed to inject trace context");
         }
     }
 }

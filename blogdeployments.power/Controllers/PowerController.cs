@@ -29,7 +29,7 @@ public class PowerController : ControllerBase
     }
 
     [HttpGet(Name = "GetStatus")]
-    public async Task<ClusterPowerStatus> Get(string id)
+    public async Task<ClusterPower> Get(string id)
     {
         return await _statusRepository.GetPowerStatus(id);
     }

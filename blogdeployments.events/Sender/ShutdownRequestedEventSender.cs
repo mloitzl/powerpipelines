@@ -8,7 +8,7 @@ public class ShutdownRequestedEventSender : EventSender<ShutdownRequested>
 {
     public ShutdownRequestedEventSender(
         IOptions<RabbitMqConfiguration> options,
-        ILogger<EventSender<ShutdownRequested>> logger) : base(options, logger)
+        ILogger<ShutdownRequestedEventSender> logger) : base(options, logger)
     {
     }
 }

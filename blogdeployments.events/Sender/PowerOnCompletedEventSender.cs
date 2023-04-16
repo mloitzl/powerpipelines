@@ -8,7 +8,7 @@ public class PowerOnCompletedEventSender : EventSender<PowerOnCompleted>
 {
     public PowerOnCompletedEventSender(
         IOptions<RabbitMqConfiguration> options,
-        ILogger<EventSender<PowerOnCompleted>> logger) : base(options, logger)
+        ILogger<PowerOnCompletedEventSender> logger) : base(options, logger)
     {
     }
 }

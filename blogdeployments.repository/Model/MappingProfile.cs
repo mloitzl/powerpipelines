@@ -9,7 +9,7 @@ public class MappingProfile : Profile
     {
         CreateMap<DeploymentDocument, Deployment>();
         CreateMap<Deployment, DeploymentDocument>();
-        CreateMap<ClusterPowerStatusDocument, ClusterPowerStatus>();
-        CreateMap<ClusterPowerStatus, ClusterPowerStatusDocument>();
+        CreateMap<ClusterPowerStatusDocument, ClusterPower>();
+        CreateMap<ClusterPower, ClusterPowerStatusDocument>();
     }
 }
